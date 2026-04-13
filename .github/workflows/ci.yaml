@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Typecheck, tests and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: 20.19.4
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar lint
+        run: npm run lint
+
+      - name: Validar formatacao
+        run: npm run format:check
+
+      - name: Validar tipos
+        run: npm run typecheck
+
+      - name: Executar testes
+        run: npm run test:ci
+
+      - name: Gerar build web
+        run: npm run build:web
