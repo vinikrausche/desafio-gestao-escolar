@@ -1,14 +1,10 @@
-import {
-  Button,
-  ButtonText,
-  Heading,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
+import { Heading, Text, VStack } from '@gluestack-ui/themed';
 
+import { AppButton } from '../../../components/actions/app-button';
 import { FormActions } from '../../../components/forms/form-actions';
 import { FormCard } from '../../../components/forms/form-card';
 import { FormTextInput } from '../../../components/forms/form-text-input';
+import { ClassroomFormCard } from './classroom-form-card';
 import type {
   SchoolFormErrors,
   SchoolFormField,
@@ -74,49 +70,28 @@ export function SchoolForm({
           </Text>
         </VStack>
 
-        <Button
+        <AppButton
           accessibilityLabel="Adicionar turma"
+          align="start"
+          label="Adicionar turma"
           onPress={onAddClassroom}
-          style={styles.addClassroomButton}
-        >
-          <ButtonText style={styles.addClassroomButtonText}>
-            Adicionar turma
-          </ButtonText>
-        </Button>
+          size="sm"
+          variant="soft"
+        />
 
         {formValues.classrooms.length === 0 ? (
           <Text style={styles.classroomHelper}>Nenhuma turma adicionada.</Text>
         ) : null}
 
         {formValues.classrooms.map((classroom, index) => (
-          <VStack key={classroom.id} style={styles.classroomCard}>
-            <VStack style={styles.classroomCardContent}>
-              <VStack style={styles.classroomHeader}>
-                <Text
-                  style={styles.classroomTitle}
-                >{`Turma ${index + 1}`}</Text>
-              </VStack>
-
-              <FormTextInput
-                autoCapitalize="words"
-                errorMessage={errors.classrooms?.[classroom.id]}
-                label="Nome da turma"
-                onChangeText={(value) => onClassroomChange(classroom.id, value)}
-                placeholder="Ex.: 6º Ano A"
-                value={classroom.name}
-              />
-
-              <Button
-                accessibilityLabel={`Remover turma ${index + 1}`}
-                onPress={() => onRemoveClassroom(classroom.id)}
-                style={styles.removeClassroomButton}
-              >
-                <ButtonText style={styles.removeClassroomButtonText}>
-                  Remover turma
-                </ButtonText>
-              </Button>
-            </VStack>
-          </VStack>
+          <ClassroomFormCard
+            classroom={classroom}
+            errorMessage={errors.classrooms?.[classroom.id]}
+            index={index}
+            key={classroom.id}
+            onChange={(value) => onClassroomChange(classroom.id, value)}
+            onRemove={() => onRemoveClassroom(classroom.id)}
+          />
         ))}
       </VStack>
 

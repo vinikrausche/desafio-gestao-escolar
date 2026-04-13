@@ -1,9 +1,4 @@
 import { StyleSheet } from 'react-native';
-
-import {
-  centeredButtonStyle,
-  centeredButtonTextStyle,
-} from '../../theme/button-presets';
 import { appShadows, appTheme } from '../../theme/app-theme';
 
 export const stateCardStyles = StyleSheet.create({
@@ -40,36 +35,10 @@ export const stateCardStyles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
   },
-  primaryAction: {
-    ...centeredButtonStyle,
-    backgroundColor: appTheme.colors.brandStrong,
-    borderRadius: 16,
-    minHeight: 44,
-  },
-  primaryActionText: {
-    ...centeredButtonTextStyle,
-    color: appTheme.colors.textInverse,
-    fontSize: 14,
-    fontWeight: '700',
-  },
   rowContent: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  secondaryAction: {
-    ...centeredButtonStyle,
-    backgroundColor: appTheme.colors.surface,
-    borderColor: appTheme.colors.borderStrong,
-    borderRadius: 16,
-    borderWidth: 1,
-    minHeight: 44,
-  },
-  secondaryActionText: {
-    ...centeredButtonTextStyle,
-    color: appTheme.colors.brandStrong,
-    fontSize: 14,
-    fontWeight: '700',
   },
   softTone: {
     backgroundColor: appTheme.colors.brandSoft,

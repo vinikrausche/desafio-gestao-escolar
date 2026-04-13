@@ -1,5 +1,6 @@
-import { Button, ButtonText, VStack } from '@gluestack-ui/themed';
+import { VStack } from '@gluestack-ui/themed';
 
+import { AppButton } from '../actions/app-button';
 import { formActionsStyles as styles } from './form-actions.styles';
 
 type FormActionsProps = {
@@ -21,23 +22,21 @@ export function FormActions({
 }: FormActionsProps) {
   return (
     <VStack style={styles.actions}>
-      <Button
+      <AppButton
         isDisabled={isPrimaryDisabled}
-        onPress={() => void onPrimaryPress()}
-        style={styles.primaryButton}
-      >
-        <ButtonText style={styles.primaryButtonText}>{primaryLabel}</ButtonText>
-      </Button>
+        label={primaryLabel}
+        onPress={onPrimaryPress}
+        size="md"
+        variant="primary"
+      />
 
-      <Button
+      <AppButton
         isDisabled={isSecondaryDisabled}
+        label={secondaryLabel}
         onPress={onSecondaryPress}
-        style={styles.secondaryButton}
-      >
-        <ButtonText style={styles.secondaryButtonText}>
-          {secondaryLabel}
-        </ButtonText>
-      </Button>
+        size="md"
+        variant="secondary"
+      />
     </VStack>
   );
 }

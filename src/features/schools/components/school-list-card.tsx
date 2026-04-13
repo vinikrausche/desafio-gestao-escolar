@@ -1,17 +1,16 @@
 import {
   Badge,
   BadgeText,
-  Button,
   Card,
   EditIcon,
   Heading,
   HStack,
-  Icon,
   Text,
   TrashIcon,
   VStack,
 } from '@gluestack-ui/themed';
 
+import { IconActionButton } from '../../../components/actions/icon-action-button';
 import type { SchoolSummary } from '../school.types';
 import { appTheme } from '../../../theme/app-theme';
 import { schoolListCardStyles as styles } from './school-list-card.styles';
@@ -65,29 +64,20 @@ export function SchoolListCard({
         </Text>
 
         <HStack style={styles.actionsGrid}>
-          <Button
+          <IconActionButton
             accessibilityLabel={`Editar escola ${school.name}`}
+            icon={EditIcon}
+            iconColor={appTheme.colors.brandStrong}
             onPress={onEdit}
-            style={styles.iconActionButton}
-          >
-            <Icon
-              as={EditIcon}
-              color={appTheme.colors.brandStrong}
-              style={styles.iconAction}
-            />
-          </Button>
+          />
 
-          <Button
+          <IconActionButton
             accessibilityLabel={`Excluir escola ${school.name}`}
+            icon={TrashIcon}
+            iconColor={appTheme.colors.error}
             onPress={onDelete}
-            style={styles.iconDangerActionButton}
-          >
-            <Icon
-              as={TrashIcon}
-              color={appTheme.colors.error}
-              style={styles.iconAction}
-            />
-          </Button>
+            tone="danger"
+          />
         </HStack>
       </VStack>
     </Card>

@@ -1,14 +1,7 @@
-import {
-  Button,
-  ButtonText,
-  Card,
-  HStack,
-  Spinner,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
+import { Card, HStack, Spinner, Text, VStack } from '@gluestack-ui/themed';
 import { type PropsWithChildren } from 'react';
 
+import { AppButton } from '../actions/app-button';
 import { appTheme } from '../../theme/app-theme';
 import { stateCardStyles as styles } from './state-card.styles';
 
@@ -36,17 +29,6 @@ const toneStyles = {
   surface: styles.surfaceTone,
 } as const;
 
-const actionStyles = {
-  primary: {
-    button: styles.primaryAction,
-    text: styles.primaryActionText,
-  },
-  secondary: {
-    button: styles.secondaryAction,
-    text: styles.secondaryActionText,
-  },
-} as const;
-
 export function StateCard({
   actionLabel,
   actionVariant = 'primary',
@@ -62,7 +44,6 @@ export function StateCard({
 }: StateCardProps) {
   const isCentered = align === 'center';
   const isRowLayout = showSpinner && layout === 'row';
-  const selectedActionStyles = actionStyles[actionVariant];
 
   return (
     <Card
@@ -121,17 +102,13 @@ export function StateCard({
             </Text>
 
             {actionLabel && onAction ? (
-              <Button
+              <AppButton
+                align={isCentered ? 'center' : 'start'}
+                label={actionLabel}
                 onPress={onAction}
-                style={[
-                  selectedActionStyles.button,
-                  { alignSelf: isCentered ? 'center' : 'flex-start' },
-                ]}
-              >
-                <ButtonText style={selectedActionStyles.text}>
-                  {actionLabel}
-                </ButtonText>
-              </Button>
+                size="sm"
+                variant={actionVariant}
+              />
             ) : null}
 
             {children}

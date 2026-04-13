@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-import { centeredButtonStyle } from '../../../theme/button-presets';
 import { appShadows, appTheme } from '../../../theme/app-theme';
 
 export const schoolListCardStyles = StyleSheet.create({
@@ -57,30 +56,6 @@ export const schoolListCardStyles = StyleSheet.create({
     flex: 1,
     gap: 6,
     paddingRight: 8,
-  },
-  iconAction: {
-    height: 18,
-    width: 18,
-  },
-  iconActionButton: {
-    ...centeredButtonStyle,
-    backgroundColor: appTheme.colors.surfaceAlt,
-    borderColor: appTheme.colors.borderStrong,
-    borderRadius: 16,
-    borderWidth: 1,
-    minHeight: 44,
-    minWidth: 44,
-    paddingHorizontal: 0,
-  },
-  iconDangerActionButton: {
-    ...centeredButtonStyle,
-    backgroundColor: appTheme.colors.errorSoft,
-    borderColor: appTheme.colors.errorBorder,
-    borderRadius: 16,
-    borderWidth: 1,
-    minHeight: 44,
-    minWidth: 44,
-    paddingHorizontal: 0,
   },
   meta: {
     color: appTheme.colors.textMuted,
