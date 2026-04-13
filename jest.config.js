@@ -10,7 +10,7 @@ module.exports = {
   testMatch: ['**/*.test.ts', '**/*.test.tsx'],
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
   transformIgnorePatterns: [
-    '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|@gluestack-ui|@gluestack-style))',
+    '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|@gluestack-ui|@gluestack-style|@legendapp))',
     '/node_modules/react-native-reanimated/plugin/',
   ],
 };

@@ -1,4 +1,5 @@
-// Placeholder route kept intentionally empty until the first domain screen is implemented.
+import { Redirect } from 'expo-router';
+
 export default function IndexRoute() {
-  return null;
+  return <Redirect href="/schools" />;
 }

@@ -21,6 +21,12 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="schools/index" options={{ title: 'Escolas' }} />
+        <Stack.Screen name="schools/new" options={{ title: 'Nova Escola' }} />
+        <Stack.Screen
+          name="schools/[schoolId]/edit"
+          options={{ title: 'Editar Escola' }}
+        />
       </Stack>
     </AppProvider>
   );
