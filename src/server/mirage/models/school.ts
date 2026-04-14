@@ -96,11 +96,11 @@ function findSchoolWithClassroomById(
 }
 
 export const schoolModel = {
-  create(payload: CreateSchoolPayload): SchoolEntity {
+  async create(payload: CreateSchoolPayload): Promise<SchoolEntity> {
     const snapshot = readMockDb();
     const nextSchool = buildSchoolEntity(payload);
 
-    writeMockDb({
+    await writeMockDb({
       ...snapshot,
       schools: [...snapshot.schools, nextSchool],
     });
@@ -108,7 +108,7 @@ export const schoolModel = {
     return nextSchool;
   },
 
-  delete(schoolId: string): boolean {
+  async delete(schoolId: string): Promise<boolean> {
     const snapshot = readMockDb();
     const nextSchools = snapshot.schools.filter(
       (school) => school.id !== schoolId,
@@ -118,7 +118,7 @@ export const schoolModel = {
       return false;
     }
 
-    writeMockDb({
+    await writeMockDb({
       ...snapshot,
       schools: nextSchools,
     });
@@ -136,10 +136,10 @@ export const schoolModel = {
     return snapshot.schools;
   },
 
-  update(
+  async update(
     schoolId: string,
     payload: UpdateSchoolPayload,
-  ): SchoolEntity | undefined {
+  ): Promise<SchoolEntity | undefined> {
     const snapshot = readMockDb();
     const currentSchool = findSchoolById(snapshot.schools, schoolId);
 
@@ -156,7 +156,7 @@ export const schoolModel = {
       name: payload.name,
     };
 
-    writeMockDb({
+    await writeMockDb({
       ...snapshot,
       schools: replaceSchool(snapshot.schools, nextSchool),
     });
@@ -164,10 +164,10 @@ export const schoolModel = {
     return nextSchool;
   },
 
-  createClassroom(
+  async createClassroom(
     schoolId: string,
     payload: CreateClassroomPayload,
-  ): SchoolEntity | undefined {
+  ): Promise<SchoolEntity | undefined> {
     const snapshot = readMockDb();
     const currentSchool = findSchoolById(snapshot.schools, schoolId);
 
@@ -180,7 +180,7 @@ export const schoolModel = {
       classrooms: [...currentSchool.classrooms, buildClassroomRecord(payload)],
     };
 
-    writeMockDb({
+    await writeMockDb({
       ...snapshot,
       schools: replaceSchool(snapshot.schools, nextSchool),
     });
@@ -188,10 +188,10 @@ export const schoolModel = {
     return nextSchool;
   },
 
-  deleteClassroom(
+  async deleteClassroom(
     schoolId: string,
     classroomId: string,
-  ): SchoolEntity | undefined {
+  ): Promise<SchoolEntity | undefined> {
     const snapshot = readMockDb();
     const currentSchool = findSchoolById(snapshot.schools, schoolId);
 
@@ -212,7 +212,7 @@ export const schoolModel = {
       classrooms: nextClassrooms,
     };
 
-    writeMockDb({
+    await writeMockDb({
       ...snapshot,
       schools: replaceSchool(snapshot.schools, nextSchool),
     });
@@ -258,8 +258,10 @@ export const schoolModel = {
     );
   },
 
-  createClass(payload: CreateClassPayload): ClassResource | undefined {
-    const updatedSchool = this.createClassroom(payload.schoolId, payload);
+  async createClass(
+    payload: CreateClassPayload,
+  ): Promise<ClassResource | undefined> {
+    const updatedSchool = await this.createClassroom(payload.schoolId, payload);
 
     if (!updatedSchool) {
       return undefined;
@@ -274,11 +276,11 @@ export const schoolModel = {
     return buildClassResource(updatedSchool, createdClassroom);
   },
 
-  updateClassroom(
+  async updateClassroom(
     schoolId: string,
     classroomId: string,
     payload: UpdateClassroomPayload,
-  ): SchoolEntity | undefined {
+  ): Promise<SchoolEntity | undefined> {
     const snapshot = readMockDb();
     const currentSchool = findSchoolById(snapshot.schools, schoolId);
 
@@ -307,7 +309,7 @@ export const schoolModel = {
       ),
     };
 
-    writeMockDb({
+    await writeMockDb({
       ...snapshot,
       schools: replaceSchool(snapshot.schools, nextSchool),
     });
@@ -315,10 +317,10 @@ export const schoolModel = {
     return nextSchool;
   },
 
-  updateClass(
+  async updateClass(
     classroomId: string,
     payload: UpdateClassroomPayload,
-  ): ClassResource | undefined {
+  ): Promise<ClassResource | undefined> {
     const snapshot = readMockDb();
     const match = findSchoolWithClassroomById(snapshot.schools, classroomId);
 
@@ -326,12 +328,12 @@ export const schoolModel = {
       return undefined;
     }
 
-    this.updateClassroom(match.school.id, classroomId, payload);
+    await this.updateClassroom(match.school.id, classroomId, payload);
 
     return this.getClass(classroomId);
   },
 
-  deleteClass(classroomId: string): boolean {
+  async deleteClass(classroomId: string): Promise<boolean> {
     const snapshot = readMockDb();
     const match = findSchoolWithClassroomById(snapshot.schools, classroomId);
 
@@ -339,6 +341,6 @@ export const schoolModel = {
       return false;
     }
 
-    return Boolean(this.deleteClassroom(match.school.id, classroomId));
+    return Boolean(await this.deleteClassroom(match.school.id, classroomId));
   },
 };

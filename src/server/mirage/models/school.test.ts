@@ -1,13 +1,21 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { schoolModel } from './school';
-import { readMockDb, resetMockDb } from '../seeds/in-memory-db';
+import {
+  clearPersistedMockDb,
+  readMockDb,
+  resetMockDb,
+} from '../seeds/in-memory-db';
+import { MOCK_DB_STORAGE_KEY } from '../seeds/mock-db.storage';
 
 describe('schoolModel', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetMockDb();
+    await clearPersistedMockDb();
   });
 
-  it('cria a escola com turmas associadas', () => {
-    const school = schoolModel.create({
+  it('cria a escola com turmas associadas', async () => {
+    const school = await schoolModel.create({
       address: 'Avenida Brasil, 100',
       classrooms: [
         {
@@ -25,8 +33,8 @@ describe('schoolModel', () => {
     expect(readMockDb().schools).toHaveLength(3);
   });
 
-  it('lista as escolas com as turmas persistidas', () => {
-    const school = schoolModel.create({
+  it('lista as escolas com as turmas persistidas', async () => {
+    const school = await schoolModel.create({
       address: 'Rua Um, 10',
       classrooms: [
         {
@@ -64,8 +72,8 @@ describe('schoolModel', () => {
     );
   });
 
-  it('atualiza a escola e preserva ids existentes das turmas quando enviados', () => {
-    const school = schoolModel.create({
+  it('atualiza a escola e preserva ids existentes das turmas quando enviados', async () => {
+    const school = await schoolModel.create({
       address: 'Rua Antiga, 1',
       classrooms: [
         {
@@ -80,7 +88,7 @@ describe('schoolModel', () => {
     const classroomId = school.classrooms[0]?.id;
 
     expect(
-      schoolModel.update(school.id, {
+      await schoolModel.update(school.id, {
         address: 'Rua Nova, 200',
         classrooms: [
           {
@@ -118,25 +126,28 @@ describe('schoolModel', () => {
     );
   });
 
-  it('remove a escola do banco em memoria', () => {
-    const school = schoolModel.create({
+  it('remove a escola do banco em memoria', async () => {
+    const school = await schoolModel.create({
       address: 'Avenida Sul, 7',
       classrooms: [],
       name: 'Escola Sul',
     });
 
-    expect(schoolModel.delete(school.id)).toBe(true);
+    expect(await schoolModel.delete(school.id)).toBe(true);
     expect(
       readMockDb().schools.find((item) => item.id === school.id),
     ).toBeUndefined();
   });
 
-  it('cria, atualiza e remove uma turma da escola', () => {
-    const schoolAfterCreate = schoolModel.createClassroom('school-seed-1', {
-      name: '8º Ano C',
-      schoolYear: '2026',
-      shift: 'night',
-    });
+  it('cria, atualiza e remove uma turma da escola', async () => {
+    const schoolAfterCreate = await schoolModel.createClassroom(
+      'school-seed-1',
+      {
+        name: '8º Ano C',
+        schoolYear: '2026',
+        shift: 'night',
+      },
+    );
 
     const createdClassroom = schoolAfterCreate?.classrooms.find(
       (classroom) => classroom.name === '8º Ano C',
@@ -150,7 +161,7 @@ describe('schoolModel', () => {
       }),
     );
 
-    const schoolAfterUpdate = schoolModel.updateClassroom(
+    const schoolAfterUpdate = await schoolModel.updateClassroom(
       'school-seed-1',
       createdClassroom?.id ?? '',
       {
@@ -171,7 +182,7 @@ describe('schoolModel', () => {
       ]),
     );
 
-    const schoolAfterDelete = schoolModel.deleteClassroom(
+    const schoolAfterDelete = await schoolModel.deleteClassroom(
       'school-seed-1',
       createdClassroom?.id ?? '',
     );
@@ -210,8 +221,8 @@ describe('schoolModel', () => {
     );
   });
 
-  it('cria, consulta, atualiza e remove uma turma pelo recurso /classes', () => {
-    const createdClass = schoolModel.createClass({
+  it('cria, consulta, atualiza e remove uma turma pelo recurso /classes', async () => {
+    const createdClass = await schoolModel.createClass({
       name: '9º Ano C',
       schoolId: 'school-seed-2',
       schoolYear: '2027',
@@ -236,7 +247,7 @@ describe('schoolModel', () => {
     );
 
     expect(
-      schoolModel.updateClass(createdClass?.id ?? '', {
+      await schoolModel.updateClass(createdClass?.id ?? '', {
         name: '9º Ano C - Atualizada',
         schoolYear: '2028',
         shift: 'afternoon',
@@ -250,7 +261,18 @@ describe('schoolModel', () => {
       }),
     );
 
-    expect(schoolModel.deleteClass(createdClass?.id ?? '')).toBe(true);
+    expect(await schoolModel.deleteClass(createdClass?.id ?? '')).toBe(true);
     expect(schoolModel.getClass(createdClass?.id ?? '')).toBeUndefined();
+  });
+
+  it('persiste a edicao de uma escola seed antes de concluir o update', async () => {
+    await schoolModel.update('school-seed-1', {
+      address: 'Rua das Acacias, 120 - Centro',
+      name: 'Escola Municipal Centro Atualizada',
+    });
+
+    const persistedState = await AsyncStorage.getItem(MOCK_DB_STORAGE_KEY);
+
+    expect(persistedState).toContain('Escola Municipal Centro Atualizada');
   });
 });
