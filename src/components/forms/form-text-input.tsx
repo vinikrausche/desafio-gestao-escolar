@@ -6,7 +6,12 @@ import {
   TextareaInput,
   VStack,
 } from '@gluestack-ui/themed';
-import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
+import { useState } from 'react';
+import {
+  Platform,
+  type KeyboardTypeOptions,
+  type TextInputProps,
+} from 'react-native';
 
 import { appTheme } from '../../theme/app-theme';
 import { formTextInputStyles as styles } from './form-text-input.styles';
@@ -37,6 +42,15 @@ export function FormTextInput({
   value,
 }: FormTextInputProps) {
   const hasError = Boolean(errorMessage);
+  const [isFocused, setIsFocused] = useState(false);
+  const webFocusResetStyle =
+    Platform.OS === 'web'
+      ? ({
+          outlineColor: 'transparent',
+          outlineStyle: 'none',
+          outlineWidth: 0,
+        } as unknown as TextInputProps['style'])
+      : undefined;
 
   return (
     <VStack style={styles.field}>
@@ -47,6 +61,7 @@ export function FormTextInput({
           style={[
             styles.input,
             styles.textarea,
+            isFocused && !hasError ? styles.inputFocused : null,
             hasError ? styles.inputError : null,
           ]}
         >
@@ -55,23 +70,33 @@ export function FormTextInput({
             keyboardType={keyboardType}
             multiline
             numberOfLines={numberOfLines}
+            onBlur={() => setIsFocused(false)}
             onChangeText={onChangeText}
+            onFocus={() => setIsFocused(true)}
             placeholder={placeholder}
             placeholderTextColor={appTheme.colors.textMuted}
-            style={styles.textareaField}
+            style={[styles.textareaField, webFocusResetStyle]}
             textAlignVertical="top"
             value={value}
           />
         </Textarea>
       ) : (
-        <Input style={[styles.input, hasError ? styles.inputError : null]}>
+        <Input
+          style={[
+            styles.input,
+            isFocused && !hasError ? styles.inputFocused : null,
+            hasError ? styles.inputError : null,
+          ]}
+        >
           <InputField
             autoCapitalize={autoCapitalize}
             keyboardType={keyboardType}
+            onBlur={() => setIsFocused(false)}
             onChangeText={onChangeText}
+            onFocus={() => setIsFocused(true)}
             placeholder={placeholder}
             placeholderTextColor={appTheme.colors.textMuted}
-            style={styles.inputField}
+            style={[styles.inputField, webFocusResetStyle]}
             value={value}
           />
         </Input>

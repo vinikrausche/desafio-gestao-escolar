@@ -32,6 +32,12 @@ export const formTextInputStyles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 16,
   },
+  inputFocused: {
+    borderColor: appTheme.colors.brandMuted,
+    shadowColor: appTheme.colors.brand,
+    shadowOpacity: 0.1,
+    shadowRadius: 18,
+  },
   inputError: {
     backgroundColor: appTheme.colors.errorSoft,
     borderColor: appTheme.colors.errorBorder,
