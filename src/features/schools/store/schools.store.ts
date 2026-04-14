@@ -1,5 +1,10 @@
 import { create } from 'zustand';
 
+import { classroomsService } from '../../classrooms/services/classrooms.service';
+import type {
+  CreateClassroomInput,
+  UpdateClassroomInput,
+} from '../../classrooms/classroom.types';
 import { schoolsService } from '../services/schools.service';
 import type {
   CreateSchoolInput,
@@ -25,8 +30,21 @@ type SchoolsStoreState = {
   schoolsById: Record<string, SchoolSummary>;
   status: ResourceStatus;
   createSchool: (payload: CreateSchoolInput) => Promise<SchoolSummary>;
+  createClassroom: (
+    schoolId: string,
+    payload: CreateClassroomInput,
+  ) => Promise<SchoolSummary>;
+  deleteClassroom: (
+    schoolId: string,
+    classroomId: string,
+  ) => Promise<SchoolSummary>;
   deleteSchool: (schoolId: string) => Promise<void>;
   loadSchools: (options?: LoadOptions) => Promise<SchoolSummary[]>;
+  updateClassroom: (
+    schoolId: string,
+    classroomId: string,
+    payload: UpdateClassroomInput,
+  ) => Promise<SchoolSummary>;
   updateSchool: (
     schoolId: string,
     payload: UpdateSchoolInput,
@@ -88,6 +106,18 @@ function removeSchool(
   };
 }
 
+function createReadySchoolState(
+  state: SchoolsStoreState,
+  nextSchool: SchoolSummary,
+) {
+  return {
+    ...upsertSchool(state, nextSchool),
+    errorMessage: null,
+    hasLoadedOnce: true,
+    status: 'ready' as const,
+  };
+}
+
 async function requestSchoolsFromApi(): Promise<SchoolSummary[]> {
   if (!schoolsRequest) {
     schoolsRequest = schoolsService.list().finally(() => {
@@ -108,14 +138,25 @@ export const useSchoolsStore = create<SchoolsStoreState>((set, get) => ({
   async createSchool(payload) {
     const createdSchool = await schoolsService.create(payload);
 
-    set((state) => ({
-      ...upsertSchool(state, createdSchool),
-      errorMessage: null,
-      hasLoadedOnce: true,
-      status: 'ready',
-    }));
+    set((state) => createReadySchoolState(state, createdSchool));
 
     return createdSchool;
+  },
+
+  async createClassroom(schoolId, payload) {
+    const updatedSchool = await classroomsService.create(schoolId, payload);
+
+    set((state) => createReadySchoolState(state, updatedSchool));
+
+    return updatedSchool;
+  },
+
+  async deleteClassroom(schoolId, classroomId) {
+    const updatedSchool = await classroomsService.delete(schoolId, classroomId);
+
+    set((state) => createReadySchoolState(state, updatedSchool));
+
+    return updatedSchool;
   },
 
   async deleteSchool(schoolId) {
@@ -174,12 +215,19 @@ export const useSchoolsStore = create<SchoolsStoreState>((set, get) => ({
   async updateSchool(schoolId, payload) {
     const updatedSchool = await schoolsService.update(schoolId, payload);
 
-    set((state) => ({
-      ...upsertSchool(state, updatedSchool),
-      errorMessage: null,
-      hasLoadedOnce: true,
-      status: 'ready',
-    }));
+    set((state) => createReadySchoolState(state, updatedSchool));
+
+    return updatedSchool;
+  },
+
+  async updateClassroom(schoolId, classroomId, payload) {
+    const updatedSchool = await classroomsService.update(
+      schoolId,
+      classroomId,
+      payload,
+    );
+
+    set((state) => createReadySchoolState(state, updatedSchool));
 
     return updatedSchool;
   },

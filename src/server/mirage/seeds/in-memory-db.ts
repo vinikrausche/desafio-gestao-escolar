@@ -1,6 +1,8 @@
 export type ClassroomRecord = {
   id: string;
   name: string;
+  schoolYear: string;
+  shift: 'morning' | 'afternoon' | 'night';
 };
 
 export type SchoolEntity = {
@@ -22,10 +24,14 @@ const initialMockDb: MockDatabaseState = {
         {
           id: 'classroom-seed-1',
           name: '6º Ano A',
+          schoolYear: '2026',
+          shift: 'morning',
         },
         {
           id: 'classroom-seed-2',
           name: '6º Ano B',
+          schoolYear: '2026',
+          shift: 'afternoon',
         },
       ],
       id: 'school-seed-1',
@@ -37,6 +43,8 @@ const initialMockDb: MockDatabaseState = {
         {
           id: 'classroom-seed-3',
           name: '7º Ano A',
+          schoolYear: '2026',
+          shift: 'morning',
         },
       ],
       id: 'school-seed-2',

@@ -10,6 +10,7 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
+import { AppButton } from '../../../components/actions/app-button';
 import { IconActionButton } from '../../../components/actions/icon-action-button';
 import type { SchoolSummary } from '../school.types';
 import { appTheme } from '../../../theme/app-theme';
@@ -18,6 +19,7 @@ import { schoolListCardStyles as styles } from './school-list-card.styles';
 type SchoolListCardProps = {
   onDelete: () => void;
   onEdit: () => void;
+  onManageClassrooms: () => void;
   school: SchoolSummary;
 };
 
@@ -36,6 +38,7 @@ function formatClassroomPreview(school: SchoolSummary) {
 export function SchoolListCard({
   onDelete,
   onEdit,
+  onManageClassrooms,
   school,
 }: SchoolListCardProps) {
   return (
@@ -62,6 +65,13 @@ export function SchoolListCard({
         <Text style={styles.classroomPreview}>
           {formatClassroomPreview(school)}
         </Text>
+
+        <AppButton
+          label="Gerenciar turmas"
+          onPress={onManageClassrooms}
+          size="sm"
+          variant="secondary"
+        />
 
         <HStack style={styles.actionsGrid}>
           <IconActionButton

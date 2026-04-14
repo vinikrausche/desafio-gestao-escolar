@@ -10,16 +10,8 @@ import { useSchoolsStore } from '../../src/features/schools/store/schools.store'
 export default function NewSchoolScreen() {
   const router = useRouter();
   const createSchool = useSchoolsStore((state) => state.createSchool);
-  const {
-    addClassroom,
-    errors,
-    formValues,
-    getCreatePayload,
-    removeClassroom,
-    setFormError,
-    updateClassroom,
-    updateField,
-  } = useSchoolForm();
+  const { errors, formValues, getCreatePayload, setFormError, updateField } =
+    useSchoolForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit() {
@@ -52,11 +44,8 @@ export default function NewSchoolScreen() {
         errors={errors}
         formValues={formValues}
         isSubmitting={isSubmitting}
-        onAddClassroom={addClassroom}
         onCancel={() => router.back()}
-        onClassroomChange={updateClassroom}
         onFieldChange={updateField}
-        onRemoveClassroom={removeClassroom}
         onSubmit={handleSubmit}
       />
     </ScreenShell>

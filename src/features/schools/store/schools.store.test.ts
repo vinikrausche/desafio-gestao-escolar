@@ -1,6 +1,16 @@
+import { classroomsService } from '../../classrooms/services/classrooms.service';
 import { schoolsService } from '../services/schools.service';
 import type { SchoolSummary } from '../school.types';
 import { useSchoolsStore } from './schools.store';
+
+jest.mock('../../classrooms/services/classrooms.service', () => ({
+  classroomsService: {
+    create: jest.fn(),
+    delete: jest.fn(),
+    list: jest.fn(),
+    update: jest.fn(),
+  },
+}));
 
 jest.mock('../services/schools.service', () => ({
   schoolsService: {
@@ -11,6 +21,7 @@ jest.mock('../services/schools.service', () => ({
   },
 }));
 
+const mockedClassroomsService = jest.mocked(classroomsService);
 const mockedSchoolsService = jest.mocked(schoolsService);
 const initialSchoolState = useSchoolsStore.getState();
 
@@ -32,6 +43,8 @@ describe('useSchoolsStore', () => {
           {
             id: 'classroom-1',
             name: '6º Ano A',
+            schoolYear: '2026',
+            shift: 'morning',
           },
         ],
         id: 'school-1',
@@ -164,6 +177,8 @@ describe('useSchoolsStore', () => {
         {
           id: 'classroom-1',
           name: '8º Ano A',
+          schoolYear: '2027',
+          shift: 'afternoon',
         },
       ],
       id: 'school-1',
@@ -178,6 +193,8 @@ describe('useSchoolsStore', () => {
         {
           id: 'classroom-1',
           name: '8º Ano A',
+          schoolYear: '2027',
+          shift: 'afternoon',
         },
       ],
       name: 'Escola Atualizada',
@@ -187,5 +204,117 @@ describe('useSchoolsStore', () => {
       updatedSchool,
     );
     expect(useSchoolsStore.getState().schoolIds).toEqual(['school-1']);
+  });
+
+  it('atualiza o cache local apos cadastrar uma turma', async () => {
+    useSchoolsStore.setState((state) => ({
+      ...state,
+      hasLoadedOnce: true,
+      schoolIds: ['school-1'],
+      schoolsById: {
+        'school-1': {
+          address: 'Rua A, 10',
+          classrooms: [],
+          id: 'school-1',
+          name: 'Escola A',
+        },
+      },
+      status: 'ready',
+    }));
+
+    const updatedSchool: SchoolSummary = {
+      address: 'Rua A, 10',
+      classrooms: [
+        {
+          id: 'classroom-1',
+          name: '6º Ano A',
+          schoolYear: '2026',
+          shift: 'morning',
+        },
+      ],
+      id: 'school-1',
+      name: 'Escola A',
+    };
+
+    mockedClassroomsService.create.mockResolvedValue(updatedSchool);
+
+    await useSchoolsStore.getState().createClassroom('school-1', {
+      name: '6º Ano A',
+      schoolYear: '2026',
+      shift: 'morning',
+    });
+
+    expect(useSchoolsStore.getState().schoolsById['school-1']).toEqual(
+      updatedSchool,
+    );
+  });
+
+  it('atualiza o cache local apos editar uma turma', async () => {
+    const updatedSchool: SchoolSummary = {
+      address: 'Rua A, 10',
+      classrooms: [
+        {
+          id: 'classroom-1',
+          name: '6º Ano A - Atualizada',
+          schoolYear: '2027',
+          shift: 'afternoon',
+        },
+      ],
+      id: 'school-1',
+      name: 'Escola A',
+    };
+
+    mockedClassroomsService.update.mockResolvedValue(updatedSchool);
+
+    await useSchoolsStore
+      .getState()
+      .updateClassroom('school-1', 'classroom-1', {
+        name: '6º Ano A - Atualizada',
+        schoolYear: '2027',
+        shift: 'afternoon',
+      });
+
+    expect(useSchoolsStore.getState().schoolsById['school-1']).toEqual(
+      updatedSchool,
+    );
+  });
+
+  it('atualiza o cache local apos excluir uma turma', async () => {
+    useSchoolsStore.setState((state) => ({
+      ...state,
+      hasLoadedOnce: true,
+      schoolIds: ['school-1'],
+      schoolsById: {
+        'school-1': {
+          address: 'Rua A, 10',
+          classrooms: [
+            {
+              id: 'classroom-1',
+              name: '6º Ano A',
+              schoolYear: '2026',
+              shift: 'morning',
+            },
+          ],
+          id: 'school-1',
+          name: 'Escola A',
+        },
+      },
+      status: 'ready',
+    }));
+
+    const updatedSchool: SchoolSummary = {
+      address: 'Rua A, 10',
+      classrooms: [],
+      id: 'school-1',
+      name: 'Escola A',
+    };
+
+    mockedClassroomsService.delete.mockResolvedValue(updatedSchool);
+
+    await useSchoolsStore.getState().deleteClassroom('school-1', 'classroom-1');
+
+    expect(useSchoolsStore.getState().schoolsById['school-1']).toEqual(
+      updatedSchool,
+    );
   });
 });

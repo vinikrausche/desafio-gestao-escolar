@@ -12,6 +12,8 @@ describe('schoolModel', () => {
       classrooms: [
         {
           name: '8º Ano A',
+          schoolYear: '2026',
+          shift: 'morning',
         },
       ],
       name: 'Escola Centro',
@@ -29,9 +31,13 @@ describe('schoolModel', () => {
       classrooms: [
         {
           name: '9º Ano A',
+          schoolYear: '2026',
+          shift: 'morning',
         },
         {
           name: '9º Ano B',
+          schoolYear: '2026',
+          shift: 'afternoon',
         },
       ],
       name: 'Escola A',
@@ -43,9 +49,13 @@ describe('schoolModel', () => {
           classrooms: expect.arrayContaining([
             expect.objectContaining({
               name: '9º Ano A',
+              schoolYear: '2026',
+              shift: 'morning',
             }),
             expect.objectContaining({
               name: '9º Ano B',
+              schoolYear: '2026',
+              shift: 'afternoon',
             }),
           ]),
           id: school.id,
@@ -60,6 +70,8 @@ describe('schoolModel', () => {
       classrooms: [
         {
           name: '6º Ano A',
+          schoolYear: '2026',
+          shift: 'morning',
         },
       ],
       name: 'Escola Norte',
@@ -74,9 +86,13 @@ describe('schoolModel', () => {
           {
             id: classroomId,
             name: '6º Ano A - Atualizada',
+            schoolYear: '2027',
+            shift: 'afternoon',
           },
           {
             name: '7º Ano A',
+            schoolYear: '2027',
+            shift: 'night',
           },
         ],
         name: 'Escola Norte Atualizada',
@@ -88,9 +104,13 @@ describe('schoolModel', () => {
           expect.objectContaining({
             id: classroomId,
             name: '6º Ano A - Atualizada',
+            schoolYear: '2027',
+            shift: 'afternoon',
           }),
           expect.objectContaining({
             name: '7º Ano A',
+            schoolYear: '2027',
+            shift: 'night',
           }),
         ]),
         name: 'Escola Norte Atualizada',
@@ -108,6 +128,58 @@ describe('schoolModel', () => {
     expect(schoolModel.delete(school.id)).toBe(true);
     expect(
       readMockDb().schools.find((item) => item.id === school.id),
+    ).toBeUndefined();
+  });
+
+  it('cria, atualiza e remove uma turma da escola', () => {
+    const schoolAfterCreate = schoolModel.createClassroom('school-seed-1', {
+      name: '8º Ano C',
+      schoolYear: '2026',
+      shift: 'night',
+    });
+
+    const createdClassroom = schoolAfterCreate?.classrooms.find(
+      (classroom) => classroom.name === '8º Ano C',
+    );
+
+    expect(createdClassroom).toEqual(
+      expect.objectContaining({
+        name: '8º Ano C',
+        schoolYear: '2026',
+        shift: 'night',
+      }),
+    );
+
+    const schoolAfterUpdate = schoolModel.updateClassroom(
+      'school-seed-1',
+      createdClassroom?.id ?? '',
+      {
+        name: '8º Ano C - Atualizada',
+        schoolYear: '2027',
+        shift: 'afternoon',
+      },
+    );
+
+    expect(schoolAfterUpdate?.classrooms).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: createdClassroom?.id,
+          name: '8º Ano C - Atualizada',
+          schoolYear: '2027',
+          shift: 'afternoon',
+        }),
+      ]),
+    );
+
+    const schoolAfterDelete = schoolModel.deleteClassroom(
+      'school-seed-1',
+      createdClassroom?.id ?? '',
+    );
+
+    expect(
+      schoolAfterDelete?.classrooms.find(
+        (classroom) => classroom.id === createdClassroom?.id,
+      ),
     ).toBeUndefined();
   });
 });

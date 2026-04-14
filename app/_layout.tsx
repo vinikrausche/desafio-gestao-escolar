@@ -27,6 +27,18 @@ export default function RootLayout() {
           name="schools/[schoolId]/edit"
           options={{ title: 'Editar Escola' }}
         />
+        <Stack.Screen
+          name="schools/[schoolId]/classrooms/index"
+          options={{ title: 'Turmas' }}
+        />
+        <Stack.Screen
+          name="schools/[schoolId]/classrooms/new"
+          options={{ title: 'Nova Turma' }}
+        />
+        <Stack.Screen
+          name="schools/[schoolId]/classrooms/[classroomId]/edit"
+          options={{ title: 'Editar Turma' }}
+        />
       </Stack>
     </AppProvider>
   );

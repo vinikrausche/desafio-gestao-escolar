@@ -135,6 +135,14 @@ export default function SchoolsScreen() {
                     pathname: '/schools/[schoolId]/edit',
                   })
                 }
+                onManageClassrooms={() =>
+                  router.push({
+                    params: {
+                      schoolId: school.id,
+                    },
+                    pathname: '/schools/[schoolId]/classrooms',
+                  })
+                }
                 school={school}
               />
             ))}

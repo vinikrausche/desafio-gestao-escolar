@@ -3,11 +3,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
+import { AppButton } from '../../../src/components/actions/app-button';
 import { StateCard } from '../../../src/components/feedback/state-card';
 import { ScreenShell } from '../../../src/components/layout/screen-shell';
-import { useSchoolForm } from '../../../src/features/schools/hooks/use-school-form';
 import { SchoolForm } from '../../../src/features/schools/components/school-form';
+import { useSchoolForm } from '../../../src/features/schools/hooks/use-school-form';
 import { newSchoolScreenStyles as styles } from '../../../src/features/schools/new-school-screen.styles';
+import { useSchoolResource } from '../../../src/features/schools/hooks/use-school-resource';
 import { useSchoolsStore } from '../../../src/features/schools/store/schools.store';
 import { resolveRouteParam } from '../../../src/lib/router/resolve-route-param';
 
@@ -15,29 +17,24 @@ export default function EditSchoolScreen() {
   const router = useRouter();
   const { schoolId } = useLocalSearchParams<{ schoolId?: string | string[] }>();
   const resolvedSchoolId = resolveRouteParam(schoolId, 'unknown-school');
-  const loadSchools = useSchoolsStore((state) => state.loadSchools);
-  const school = useSchoolsStore(
-    (state) => state.schoolsById[resolvedSchoolId],
-  );
-  const schoolsErrorMessage = useSchoolsStore((state) => state.errorMessage);
-  const schoolsStatus = useSchoolsStore((state) => state.status);
+  const {
+    errorMessage,
+    hasSchoolLoadError,
+    isLoadingSchool,
+    isSchoolMissing,
+    refreshSchool,
+    school,
+  } = useSchoolResource(resolvedSchoolId);
   const updateSchool = useSchoolsStore((state) => state.updateSchool);
   const {
-    addClassroom,
     errors,
     formValues,
     getUpdatePayload,
-    removeClassroom,
     replaceFormValues,
     setFormError,
-    updateClassroom,
     updateField,
   } = useSchoolForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    void loadSchools().catch(() => undefined);
-  }, [loadSchools]);
 
   useEffect(() => {
     if (!school) {
@@ -46,10 +43,6 @@ export default function EditSchoolScreen() {
 
     replaceFormValues({
       address: school.address,
-      classrooms: school.classrooms.map((classroom) => ({
-        id: classroom.id,
-        name: classroom.name,
-      })),
       name: school.name,
     });
   }, [replaceFormValues, school]);
@@ -78,11 +71,6 @@ export default function EditSchoolScreen() {
     }
   }
 
-  const isLoadingSchool =
-    (schoolsStatus === 'idle' || schoolsStatus === 'loading') && !school;
-  const hasSchoolLoadError = schoolsStatus === 'error' && !school;
-  const isSchoolMissing = schoolsStatus === 'ready' && !school;
-
   return (
     <ScreenShell eyebrow="Escolas" title="Editar Escola">
       <VStack style={styles.content}>
@@ -100,12 +88,8 @@ export default function EditSchoolScreen() {
         {hasSchoolLoadError ? (
           <StateCard
             actionLabel="Tentar novamente"
-            message={
-              schoolsErrorMessage ?? 'Nao foi possivel carregar a escola.'
-            }
-            onAction={() => {
-              void loadSchools({ force: true }).catch(() => undefined);
-            }}
+            message={errorMessage ?? 'Nao foi possivel carregar a escola.'}
+            onAction={() => void refreshSchool()}
             tone="soft"
           />
         ) : null}
@@ -121,18 +105,31 @@ export default function EditSchoolScreen() {
         ) : null}
 
         {!isLoadingSchool && !hasSchoolLoadError && !isSchoolMissing ? (
-          <SchoolForm
-            errors={errors}
-            formValues={formValues}
-            isSubmitting={isSubmitting}
-            onAddClassroom={addClassroom}
-            onCancel={() => router.back()}
-            onClassroomChange={updateClassroom}
-            onFieldChange={updateField}
-            onRemoveClassroom={removeClassroom}
-            onSubmit={handleSubmit}
-            submitLabel="Salvar alteracoes"
-          />
+          <>
+            <AppButton
+              label="Gerenciar turmas"
+              onPress={() =>
+                router.push({
+                  params: {
+                    schoolId: resolvedSchoolId,
+                  },
+                  pathname: '/schools/[schoolId]/classrooms',
+                })
+              }
+              size="sm"
+              variant="secondary"
+            />
+
+            <SchoolForm
+              errors={errors}
+              formValues={formValues}
+              isSubmitting={isSubmitting}
+              onCancel={() => router.back()}
+              onFieldChange={updateField}
+              onSubmit={handleSubmit}
+              submitLabel="Salvar alteracoes"
+            />
+          </>
         ) : null}
       </VStack>
     </ScreenShell>

@@ -1,4 +1,8 @@
 import type {
+  CreateClassroomPayload,
+  UpdateClassroomPayload,
+} from '../dto/classroom.dto';
+import type {
   CreateSchoolPayload,
   UpdateSchoolPayload,
 } from '../dto/school.dto';
@@ -13,10 +17,14 @@ import { generateModelId } from './model-id';
 function buildClassroomRecord(classroom: {
   id?: string;
   name: string;
+  schoolYear: string;
+  shift: ClassroomRecord['shift'];
 }): ClassroomRecord {
   return {
     id: classroom.id ?? generateModelId('classroom'),
     name: classroom.name,
+    schoolYear: classroom.schoolYear,
+    shift: classroom.shift,
   };
 }
 
@@ -43,6 +51,13 @@ function replaceSchool(
   return schools.map((school) =>
     school.id === nextSchool.id ? nextSchool : school,
   );
+}
+
+function findClassroomById(
+  classrooms: ClassroomRecord[],
+  classroomId: string,
+): ClassroomRecord | undefined {
+  return classrooms.find((classroom) => classroom.id === classroomId);
 }
 
 export const schoolModel = {
@@ -100,8 +115,112 @@ export const schoolModel = {
     const nextSchool: SchoolEntity = {
       ...currentSchool,
       address: payload.address,
-      classrooms: payload.classrooms.map(buildClassroomRecord),
+      classrooms: payload.classrooms
+        ? payload.classrooms.map(buildClassroomRecord)
+        : currentSchool.classrooms,
       name: payload.name,
+    };
+
+    writeMockDb({
+      ...snapshot,
+      schools: replaceSchool(snapshot.schools, nextSchool),
+    });
+
+    return nextSchool;
+  },
+
+  createClassroom(
+    schoolId: string,
+    payload: CreateClassroomPayload,
+  ): SchoolEntity | undefined {
+    const snapshot = readMockDb();
+    const currentSchool = findSchoolById(snapshot.schools, schoolId);
+
+    if (!currentSchool) {
+      return undefined;
+    }
+
+    const nextSchool: SchoolEntity = {
+      ...currentSchool,
+      classrooms: [...currentSchool.classrooms, buildClassroomRecord(payload)],
+    };
+
+    writeMockDb({
+      ...snapshot,
+      schools: replaceSchool(snapshot.schools, nextSchool),
+    });
+
+    return nextSchool;
+  },
+
+  deleteClassroom(
+    schoolId: string,
+    classroomId: string,
+  ): SchoolEntity | undefined {
+    const snapshot = readMockDb();
+    const currentSchool = findSchoolById(snapshot.schools, schoolId);
+
+    if (!currentSchool) {
+      return undefined;
+    }
+
+    const nextClassrooms = currentSchool.classrooms.filter(
+      (classroom) => classroom.id !== classroomId,
+    );
+
+    if (nextClassrooms.length === currentSchool.classrooms.length) {
+      return undefined;
+    }
+
+    const nextSchool: SchoolEntity = {
+      ...currentSchool,
+      classrooms: nextClassrooms,
+    };
+
+    writeMockDb({
+      ...snapshot,
+      schools: replaceSchool(snapshot.schools, nextSchool),
+    });
+
+    return nextSchool;
+  },
+
+  listClassrooms(schoolId: string): ClassroomRecord[] | undefined {
+    const school = this.get(schoolId);
+    return school?.classrooms;
+  },
+
+  updateClassroom(
+    schoolId: string,
+    classroomId: string,
+    payload: UpdateClassroomPayload,
+  ): SchoolEntity | undefined {
+    const snapshot = readMockDb();
+    const currentSchool = findSchoolById(snapshot.schools, schoolId);
+
+    if (!currentSchool) {
+      return undefined;
+    }
+
+    const currentClassroom = findClassroomById(
+      currentSchool.classrooms,
+      classroomId,
+    );
+
+    if (!currentClassroom) {
+      return undefined;
+    }
+
+    const nextSchool: SchoolEntity = {
+      ...currentSchool,
+      classrooms: currentSchool.classrooms.map((classroom) =>
+        classroom.id === classroomId
+          ? buildClassroomRecord({
+              ...payload,
+              id: currentClassroom.id,
+            })
+          : classroom,
+      ),
     };
 
     writeMockDb({

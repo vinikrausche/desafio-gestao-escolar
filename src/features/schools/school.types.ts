@@ -1,4 +1,8 @@
-import type { Classroom, ClassroomInput } from '../classrooms/classroom.types';
+import type {
+  Classroom,
+  ClassroomInput,
+  CreateClassroomInput,
+} from '../classrooms/classroom.types';
 
 export type SchoolSummary = {
   address: string;
@@ -9,14 +13,12 @@ export type SchoolSummary = {
 
 export type CreateSchoolInput = {
   address: string;
-  classrooms: {
-    name: string;
-  }[];
+  classrooms?: CreateClassroomInput[];
   name: string;
 };
 
 export type UpdateSchoolInput = {
   address: string;
-  classrooms: ClassroomInput[];
+  classrooms?: ClassroomInput[];
   name: string;
 };
