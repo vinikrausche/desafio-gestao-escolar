@@ -1,20 +1,10 @@
-export type ClassroomRecord = {
-  id: string;
-  name: string;
-  schoolYear: string;
-  shift: 'morning' | 'afternoon' | 'night';
-};
+import type { MockDatabaseState } from '../../../types/server/mirage/mock-db.types';
 
-export type SchoolEntity = {
-  address: string;
-  classrooms: ClassroomRecord[];
-  id: string;
-  name: string;
-};
-
-export type MockDatabaseState = {
-  schools: SchoolEntity[];
-};
+export type {
+  ClassroomRecord,
+  MockDatabaseState,
+  SchoolEntity,
+} from '../../../types/server/mirage/mock-db.types';
 
 export const initialMockDb: MockDatabaseState = {
   schools: [

@@ -13,14 +13,8 @@ import {
 import { IconActionButton } from '../../../components/actions/icon-action-button';
 import { appTheme } from '../../../theme/app-theme';
 import { classroomShiftLabels } from '../classroom.constants';
-import type { Classroom } from '../classroom.types';
 import { classroomListCardStyles as styles } from './classroom-list-card.styles';
-
-type ClassroomListCardProps = {
-  classroom: Classroom;
-  onDelete: () => void;
-  onEdit: () => void;
-};
+import type { ClassroomListCardProps } from './types/classroom-list-card.types';
 
 export function ClassroomListCard({
   classroom,

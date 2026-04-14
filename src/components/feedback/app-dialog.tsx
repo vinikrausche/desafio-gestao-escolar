@@ -9,19 +9,9 @@ import {
   Text,
 } from '@gluestack-ui/themed';
 
-import { AppButton, type AppButtonVariant } from '../actions/app-button';
+import { AppButton } from '../actions/app-button';
+import type { AppDialogProps } from './types/app-dialog.types';
 import { appDialogStyles as styles } from './app-dialog.styles';
-
-type AppDialogProps = {
-  cancelLabel?: string;
-  confirmLabel?: string;
-  confirmVariant?: AppButtonVariant;
-  isOpen: boolean;
-  message: string;
-  onClose: () => void;
-  onConfirm?: () => void;
-  title: string;
-};
 
 export function AppDialog({
   cancelLabel = 'Cancelar',

@@ -2,20 +2,7 @@ import { Text, VStack } from '@gluestack-ui/themed';
 
 import { AppButton } from '../actions/app-button';
 import { formOptionGroupStyles as styles } from './form-option-group.styles';
-
-type FormOption<TValue extends string> = {
-  label: string;
-  value: TValue;
-};
-
-type FormOptionGroupProps<TValue extends string> = {
-  errorMessage?: string;
-  helperMessage?: string;
-  label: string;
-  onChange: (value: TValue) => void;
-  options: readonly FormOption<TValue>[];
-  value: TValue;
-};
+import type { FormOptionGroupProps } from './types/form-option-group.types';
 
 export function FormOptionGroup<TValue extends string>({
   errorMessage,

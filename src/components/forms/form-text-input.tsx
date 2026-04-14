@@ -7,27 +7,11 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 import { useState } from 'react';
-import {
-  Platform,
-  type KeyboardTypeOptions,
-  type TextInputProps,
-} from 'react-native';
+import { Platform, type TextInputProps } from 'react-native';
 
 import { appTheme } from '../../theme/app-theme';
 import { formTextInputStyles as styles } from './form-text-input.styles';
-
-type FormTextInputProps = {
-  autoCapitalize?: TextInputProps['autoCapitalize'];
-  errorMessage?: string;
-  helperMessage?: string;
-  keyboardType?: KeyboardTypeOptions;
-  label: string;
-  multiline?: boolean;
-  numberOfLines?: number;
-  onChangeText: (value: string) => void;
-  placeholder: string;
-  value: string;
-};
+import type { FormTextInputProps } from './types/form-text-input.types';
 
 export function FormTextInput({
   autoCapitalize,

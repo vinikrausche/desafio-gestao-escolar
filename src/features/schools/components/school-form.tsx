@@ -1,21 +1,7 @@
 import { FormActions } from '../../../components/forms/form-actions';
 import { FormCard } from '../../../components/forms/form-card';
 import { FormTextInput } from '../../../components/forms/form-text-input';
-import type {
-  SchoolFormErrors,
-  SchoolFormField,
-  SchoolFormValues,
-} from '../models/school-form.model';
-
-type SchoolFormProps = {
-  errors: SchoolFormErrors;
-  formValues: SchoolFormValues;
-  isSubmitting: boolean;
-  onCancel: () => void;
-  onFieldChange: (field: SchoolFormField, value: string) => void;
-  onSubmit: () => void;
-  submitLabel?: string;
-};
+import type { SchoolFormProps } from './types/school-form.types';
 
 export function SchoolForm({
   errors,

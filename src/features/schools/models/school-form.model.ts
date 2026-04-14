@@ -1,17 +1,17 @@
-import type { CreateSchoolInput, UpdateSchoolInput } from '../school.types';
+import type {
+  CreateSchoolInput,
+  UpdateSchoolInput,
+} from '../../../types/features/schools/school.types';
+import type {
+  SchoolFormErrors,
+  SchoolFormValues,
+} from '../../../types/features/schools/school-form.types';
 
-export type SchoolFormField = keyof SchoolFormValues;
-
-export type SchoolFormValues = {
-  address: string;
-  name: string;
-};
-
-export type SchoolFormErrors = {
-  address?: string;
-  form?: string;
-  name?: string;
-};
+export type {
+  SchoolFormErrors,
+  SchoolFormField,
+  SchoolFormValues,
+} from '../../../types/features/schools/school-form.types';
 
 type BuildSchoolInputResult =
   | {

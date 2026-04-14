@@ -1,27 +1,9 @@
 import { Card, HStack, Spinner, Text, VStack } from '@gluestack-ui/themed';
-import { type PropsWithChildren } from 'react';
 
 import { AppButton } from '../actions/app-button';
 import { appTheme } from '../../theme/app-theme';
 import { stateCardStyles as styles } from './state-card.styles';
-
-type StateCardTone = 'surface' | 'soft' | 'error';
-type StateCardActionVariant = 'primary' | 'secondary';
-type StateCardLayout = 'row' | 'column';
-type StateCardAlign = 'start' | 'center';
-
-type StateCardProps = PropsWithChildren<{
-  actionLabel?: string;
-  actionVariant?: StateCardActionVariant;
-  align?: StateCardAlign;
-  layout?: StateCardLayout;
-  message: string;
-  minHeight?: number;
-  onAction?: () => void;
-  showSpinner?: boolean;
-  tone?: StateCardTone;
-  title?: string;
-}>;
+import type { StateCardProps } from './types/state-card.types';
 
 const toneStyles = {
   error: styles.errorTone,

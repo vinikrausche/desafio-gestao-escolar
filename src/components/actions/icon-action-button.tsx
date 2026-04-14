@@ -1,18 +1,7 @@
 import { Button, Icon } from '@gluestack-ui/themed';
-import type { ElementType } from 'react';
 
 import { iconActionButtonStyles as styles } from './icon-action-button.styles';
-
-type IconActionButtonTone = 'default' | 'danger';
-
-type IconActionButtonProps = {
-  accessibilityLabel: string;
-  icon: ElementType;
-  iconColor: string;
-  isDisabled?: boolean;
-  onPress: () => void;
-  tone?: IconActionButtonTone;
-};
+import type { IconActionButtonProps } from './types/icon-action-button.types';
 
 const toneStyles = {
   danger: styles.dangerButton,

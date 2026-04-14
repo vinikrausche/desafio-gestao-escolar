@@ -7,6 +7,7 @@ import type {
   CreateSchoolPayload,
   UpdateSchoolPayload,
 } from '../dto/school.dto';
+import type { ClassResource } from '../../../types/server/mirage/class-resource.types';
 import {
   readMockDb,
   type ClassroomRecord,
@@ -15,10 +16,7 @@ import {
 } from '../seeds/in-memory-db';
 import { generateModelId } from './model-id';
 
-export type ClassResource = ClassroomRecord & {
-  schoolId: string;
-  schoolName: string;
-};
+export type { ClassResource } from '../../../types/server/mirage/class-resource.types';
 
 function buildClassroomRecord(classroom: {
   id?: string;

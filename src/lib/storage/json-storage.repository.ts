@@ -1,6 +1,6 @@
 import type { ZodType } from 'zod';
 
-import type { KeyValueStorage } from './key-value-storage';
+import type { KeyValueStorage } from '../../types/storage/key-value-storage.types';
 
 type CreateJsonStorageRepositoryParams<TValue> = {
   key: string;

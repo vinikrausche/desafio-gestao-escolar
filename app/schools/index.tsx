@@ -17,16 +17,7 @@ import {
 } from '../../src/features/schools/models/school-list-filter.model';
 import { schoolsScreenStyles as styles } from '../../src/features/schools/schools-screen.styles';
 import { useSchoolsStore } from '../../src/features/schools/store/schools.store';
-import type { AppButtonVariant } from '../../src/components/actions/app-button';
-
-type DialogState = {
-  confirmLabel?: string;
-  confirmVariant?: AppButtonVariant;
-  isOpen: boolean;
-  message: string;
-  onConfirm?: () => void;
-  title: string;
-};
+import type { DialogState } from './types/schools-screen.types';
 
 function createClosedDialogState(): DialogState {
   return {

@@ -2,15 +2,7 @@ import { VStack } from '@gluestack-ui/themed';
 
 import { AppButton } from '../actions/app-button';
 import { formActionsStyles as styles } from './form-actions.styles';
-
-type FormActionsProps = {
-  isPrimaryDisabled?: boolean;
-  isSecondaryDisabled?: boolean;
-  onPrimaryPress: () => void;
-  onSecondaryPress: () => void;
-  primaryLabel: string;
-  secondaryLabel?: string;
-};
+import type { FormActionsProps } from './types/form-actions.types';
 
 export function FormActions({
   isPrimaryDisabled = false,

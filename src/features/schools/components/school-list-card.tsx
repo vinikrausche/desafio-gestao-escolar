@@ -12,22 +12,15 @@ import {
 
 import { AppButton } from '../../../components/actions/app-button';
 import { IconActionButton } from '../../../components/actions/icon-action-button';
-import type { SchoolSummary } from '../school.types';
 import { appTheme } from '../../../theme/app-theme';
 import { schoolListCardStyles as styles } from './school-list-card.styles';
-
-type SchoolListCardProps = {
-  onDelete: () => void;
-  onEdit: () => void;
-  onManageClassrooms: () => void;
-  school: SchoolSummary;
-};
+import type { SchoolListCardProps } from './types/school-list-card.types';
 
 function formatClassroomCount(value: number) {
   return value === 1 ? '1 turma' : `${value} turmas`;
 }
 
-function formatClassroomPreview(school: SchoolSummary) {
+function formatClassroomPreview(school: SchoolListCardProps['school']) {
   if (school.classrooms.length === 0) {
     return 'Nenhuma turma cadastrada.';
   }

@@ -1,11 +1,7 @@
 import { Badge, BadgeText, Heading, HStack } from '@gluestack-ui/themed';
 
 import { listHeaderStyles as styles } from './list-header.styles';
-
-type ListHeaderProps = {
-  badgeLabel: string;
-  title: string;
-};
+import type { ListHeaderProps } from './types/list-header.types';
 
 export function ListHeader({ badgeLabel, title }: ListHeaderProps) {
   return (

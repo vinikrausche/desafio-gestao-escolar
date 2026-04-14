@@ -3,21 +3,7 @@ import { FormCard } from '../../../components/forms/form-card';
 import { FormOptionGroup } from '../../../components/forms/form-option-group';
 import { FormTextInput } from '../../../components/forms/form-text-input';
 import { classroomShiftOptions } from '../classroom.constants';
-import type {
-  ClassroomFormErrors,
-  ClassroomFormField,
-  ClassroomFormValues,
-} from '../models/classroom-form.model';
-
-type ClassroomFormProps = {
-  errors: ClassroomFormErrors;
-  formValues: ClassroomFormValues;
-  isSubmitting: boolean;
-  onCancel: () => void;
-  onFieldChange: (field: ClassroomFormField, value: string) => void;
-  onSubmit: () => void;
-  submitLabel?: string;
-};
+import type { ClassroomFormProps } from './types/classroom-form.types';
 
 export function ClassroomForm({
   errors,

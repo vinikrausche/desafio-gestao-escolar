@@ -1,11 +1,7 @@
 import { AddIcon, Fab, FabIcon } from '@gluestack-ui/themed';
 
 import { floatingActionButtonStyles as styles } from './floating-action-button.styles';
-
-type FloatingActionButtonProps = {
-  accessibilityLabel: string;
-  onPress: () => void;
-};
+import type { FloatingActionButtonProps } from './types/floating-action-button.types';
 
 export function FloatingActionButton({
   accessibilityLabel,

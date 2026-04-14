@@ -4,25 +4,7 @@ import { AppButton } from '../actions/app-button';
 import { FormOptionGroup } from '../forms/form-option-group';
 import { FormTextInput } from '../forms/form-text-input';
 import { searchFilterPanelStyles as styles } from './search-filter-panel.styles';
-
-type FilterOption<TFilterValue extends string> = {
-  label: string;
-  value: TFilterValue;
-};
-
-type SearchFilterPanelProps<TFilterValue extends string> = {
-  clearButtonLabel?: string;
-  defaultFilterValue: TFilterValue;
-  filterLabel: string;
-  filterOptions: readonly FilterOption<TFilterValue>[];
-  filterValue: TFilterValue;
-  onClear: () => void;
-  onFilterChange: (value: TFilterValue) => void;
-  onSearchChange: (value: string) => void;
-  searchLabel: string;
-  searchPlaceholder: string;
-  searchValue: string;
-};
+import type { SearchFilterPanelProps } from './types/search-filter-panel.types';
 
 export function SearchFilterPanel<TFilterValue extends string>({
   clearButtonLabel = 'Limpar filtros',

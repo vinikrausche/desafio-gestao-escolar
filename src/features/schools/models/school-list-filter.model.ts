@@ -1,5 +1,6 @@
 import { normalizeSearchText } from '../../../lib/text/normalize-search-text';
-import type { SchoolSummary } from '../school.types';
+import type { SchoolSummary } from '../../../types/features/schools/school.types';
+import type { SchoolStatusFilter } from '../../../types/features/schools/school-filter.types';
 
 export const schoolStatusFilterOptions = [
   {
@@ -16,8 +17,7 @@ export const schoolStatusFilterOptions = [
   },
 ] as const;
 
-export type SchoolStatusFilter =
-  (typeof schoolStatusFilterOptions)[number]['value'];
+export type { SchoolStatusFilter } from '../../../types/features/schools/school-filter.types';
 
 type FilterSchoolsParams = {
   schools: SchoolSummary[];

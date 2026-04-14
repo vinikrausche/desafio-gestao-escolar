@@ -1,23 +1,17 @@
 import type {
-  ClassroomShift,
   CreateClassroomInput,
   UpdateClassroomInput,
-} from '../classroom.types';
+} from '../../../types/features/classrooms/classroom.types';
+import type {
+  ClassroomFormErrors,
+  ClassroomFormValues,
+} from '../../../types/features/classrooms/classroom-form.types';
 
-export type ClassroomFormField = keyof ClassroomFormValues;
-
-export type ClassroomFormValues = {
-  name: string;
-  schoolYear: string;
-  shift: ClassroomShift;
-};
-
-export type ClassroomFormErrors = {
-  form?: string;
-  name?: string;
-  schoolYear?: string;
-  shift?: string;
-};
+export type {
+  ClassroomFormErrors,
+  ClassroomFormField,
+  ClassroomFormValues,
+} from '../../../types/features/classrooms/classroom-form.types';
 
 type BuildClassroomInputResult =
   | {

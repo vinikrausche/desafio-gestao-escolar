@@ -1,11 +1,7 @@
 import { Card, Text, VStack } from '@gluestack-ui/themed';
-import { type PropsWithChildren } from 'react';
 
 import { formCardStyles as styles } from './form-card.styles';
-
-type FormCardProps = PropsWithChildren<{
-  errorMessage?: string;
-}>;
+import type { FormCardProps } from './types/form-card.types';
 
 export function FormCard({ children, errorMessage }: FormCardProps) {
   return (

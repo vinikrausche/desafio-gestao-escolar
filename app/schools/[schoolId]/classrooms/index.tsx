@@ -19,16 +19,7 @@ import {
 import { useSchoolResource } from '../../../../src/features/schools/hooks/use-school-resource';
 import { useSchoolsStore } from '../../../../src/features/schools/store/schools.store';
 import { resolveRouteParam } from '../../../../src/lib/router/resolve-route-param';
-import type { AppButtonVariant } from '../../../../src/components/actions/app-button';
-
-type DialogState = {
-  confirmLabel?: string;
-  confirmVariant?: AppButtonVariant;
-  isOpen: boolean;
-  message: string;
-  onConfirm?: () => void;
-  title: string;
-};
+import type { DialogState } from './types/classrooms-screen.types';
 
 function createClosedDialogState(): DialogState {
   return {

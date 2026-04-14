@@ -1,24 +1,14 @@
 import { Button, ButtonText } from '@gluestack-ui/themed';
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import { appButtonStyles as styles } from './app-button.styles';
+import type { AppButtonProps } from './types/app-button.types';
 
-export type AppButtonVariant = 'primary' | 'secondary' | 'soft' | 'dangerSoft';
-
-export type AppButtonSize = 'compact' | 'sm' | 'md';
-export type AppButtonAlign = 'start' | 'center' | 'stretch';
-
-type AppButtonProps = {
-  accessibilityLabel?: string;
-  align?: AppButtonAlign;
-  isDisabled?: boolean;
-  label: string;
-  onPress: () => void;
-  size?: AppButtonSize;
-  style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
-  variant?: AppButtonVariant;
-};
+export type {
+  AppButtonAlign,
+  AppButtonProps,
+  AppButtonSize,
+  AppButtonVariant,
+} from './types/app-button.types';
 
 const alignmentStyles = {
   center: styles.centerAlign,

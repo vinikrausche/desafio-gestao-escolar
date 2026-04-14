@@ -1,20 +1,8 @@
-export const classroomShiftValues = ['morning', 'afternoon', 'night'] as const;
-
-export type ClassroomShift = (typeof classroomShiftValues)[number];
-
-export type Classroom = {
-  id: string;
-  name: string;
-  schoolYear: string;
-  shift: ClassroomShift;
-};
-
-export type ClassroomInput = {
-  id?: string;
-  name: string;
-  schoolYear: string;
-  shift: ClassroomShift;
-};
-
-export type CreateClassroomInput = Omit<ClassroomInput, 'id'>;
-export type UpdateClassroomInput = CreateClassroomInput;
+export {
+  classroomShiftValues,
+  type Classroom,
+  type ClassroomInput,
+  type ClassroomShift,
+  type CreateClassroomInput,
+  type UpdateClassroomInput,
+} from '../../types/features/classrooms/classroom.types';

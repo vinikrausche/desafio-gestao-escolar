@@ -1,12 +1,5 @@
-import type { PropsWithChildren, ReactNode } from 'react';
 import { Text, View } from 'react-native';
-
-type MockScreenShellProps = PropsWithChildren<{
-  description?: string;
-  eyebrow: string;
-  floatingAction?: ReactNode;
-  title: string;
-}>;
+import type { MockScreenShellProps } from './types/mock-screen-shell.types';
 
 // ! O mock remove dependencias de layout/navegacao e mantem o foco no comportamento da tela.
 export function MockScreenShell({

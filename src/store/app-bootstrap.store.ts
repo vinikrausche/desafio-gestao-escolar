@@ -1,15 +1,11 @@
 import { create } from 'zustand';
 
-export type AppBootstrapStatus = 'idle' | 'starting' | 'ready' | 'error';
+import type {
+  AppBootstrapStatus,
+  AppBootstrapStore,
+} from '../types/store/app-bootstrap.types';
 
-type AppBootstrapStore = {
-  errorMessage: string | null;
-  markError: (message: string) => void;
-  markReady: () => void;
-  markStarting: () => void;
-  reset: () => void;
-  status: AppBootstrapStatus;
-};
+export type { AppBootstrapStatus } from '../types/store/app-bootstrap.types';
 
 const initialState = {
   errorMessage: null,

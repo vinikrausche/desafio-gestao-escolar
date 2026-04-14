@@ -3,7 +3,8 @@ import {
   classroomShiftLabels,
   classroomShiftOptions,
 } from '../classroom.constants';
-import type { Classroom } from '../classroom.types';
+import type { Classroom } from '../../../types/features/classrooms/classroom.types';
+import type { ClassroomShiftFilter } from '../../../types/features/classrooms/classroom-filter.types';
 
 export const classroomShiftFilterOptions = [
   {
@@ -13,8 +14,7 @@ export const classroomShiftFilterOptions = [
   ...classroomShiftOptions,
 ] as const;
 
-export type ClassroomShiftFilter =
-  (typeof classroomShiftFilterOptions)[number]['value'];
+export type { ClassroomShiftFilter } from '../../../types/features/classrooms/classroom-filter.types';
 
 type FilterClassroomsParams = {
   classrooms: Classroom[];
