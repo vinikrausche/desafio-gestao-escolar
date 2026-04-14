@@ -18,6 +18,7 @@ import {
 } from '../../../../src/features/classrooms/models/classroom-list-filter.model';
 import { useSchoolResource } from '../../../../src/features/schools/hooks/use-school-resource';
 import { useSchoolsStore } from '../../../../src/features/schools/store/schools.store';
+import { confirmAction } from '../../../../src/lib/platform/confirm-action';
 import { resolveRouteParam } from '../../../../src/lib/router/resolve-route-param';
 
 export default function ClassroomsScreen() {
@@ -70,19 +71,14 @@ export default function ClassroomsScreen() {
   }
 
   function confirmDeleteClassroom(classroomId: string, classroomName: string) {
-    Alert.alert('Excluir turma', `Deseja excluir a turma "${classroomName}"?`, [
-      {
-        style: 'cancel',
-        text: 'Cancelar',
+    confirmAction({
+      confirmLabel: 'Excluir',
+      message: `Deseja excluir a turma "${classroomName}"?`,
+      onConfirm: () => {
+        void handleDeleteClassroom(classroomId);
       },
-      {
-        style: 'destructive',
-        text: 'Excluir',
-        onPress: () => {
-          void handleDeleteClassroom(classroomId);
-        },
-      },
-    ]);
+      title: 'Excluir turma',
+    });
   }
 
   return (

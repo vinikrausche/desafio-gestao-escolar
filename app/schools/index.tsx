@@ -17,6 +17,7 @@ import {
 } from '../../src/features/schools/models/school-list-filter.model';
 import { schoolsScreenStyles as styles } from '../../src/features/schools/schools-screen.styles';
 import { useSchoolsStore } from '../../src/features/schools/store/schools.store';
+import { confirmAction } from '../../src/lib/platform/confirm-action';
 
 export default function SchoolsScreen() {
   const router = useRouter();
@@ -70,23 +71,14 @@ export default function SchoolsScreen() {
   }
 
   function confirmDeleteSchool(schoolId: string, schoolName: string) {
-    Alert.alert(
-      'Excluir escola',
-      `Deseja excluir a escola "${schoolName}"? As turmas vinculadas tambem serao removidas.`,
-      [
-        {
-          style: 'cancel',
-          text: 'Cancelar',
-        },
-        {
-          style: 'destructive',
-          text: 'Excluir',
-          onPress: () => {
-            void handleDeleteSchool(schoolId);
-          },
-        },
-      ],
-    );
+    confirmAction({
+      confirmLabel: 'Excluir',
+      message: `Deseja excluir a escola "${schoolName}"? As turmas vinculadas tambem serao removidas.`,
+      onConfirm: () => {
+        void handleDeleteSchool(schoolId);
+      },
+      title: 'Excluir escola',
+    });
   }
 
   return (
