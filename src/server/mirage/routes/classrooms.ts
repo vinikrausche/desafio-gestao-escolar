@@ -5,7 +5,7 @@ import {
   createClassroomDtoSchema,
   updateClassroomDtoSchema,
 } from '../dto/classroom.dto';
-import { mockSchoolModel } from '../models/mock-school.model';
+import { classroomModel, schoolModel } from '../models/mock-school.model';
 import { httpResponse } from '../utils/http-response';
 import { validateRequestBody } from '../utils/validate-request-body';
 
@@ -24,7 +24,7 @@ export function registerClassroomRoutes(server: Server) {
       typeof request.queryParams.schoolId === 'string'
         ? request.queryParams.schoolId
         : undefined;
-    const classes = mockSchoolModel.listClasses(schoolId);
+    const classes = classroomModel.listClasses(schoolId);
 
     if (schoolId && !classes) {
       return httpResponse.notFound('Escola não encontrada.');
@@ -40,7 +40,7 @@ export function registerClassroomRoutes(server: Server) {
       return httpResponse.notFound('Turma não encontrada.');
     }
 
-    const classroom = mockSchoolModel.getClass(classroomId);
+    const classroom = classroomModel.getClass(classroomId);
 
     if (!classroom) {
       return httpResponse.notFound('Turma não encontrada.');
@@ -60,7 +60,7 @@ export function registerClassroomRoutes(server: Server) {
       return validationResult.response;
     }
 
-    const createdClass = await mockSchoolModel.createClass(
+    const createdClass = await classroomModel.createClass(
       validationResult.data,
     );
 
@@ -88,7 +88,7 @@ export function registerClassroomRoutes(server: Server) {
       return validationResult.response;
     }
 
-    const updatedClass = await mockSchoolModel.updateClass(
+    const updatedClass = await classroomModel.updateClass(
       classroomId,
       validationResult.data,
     );
@@ -107,7 +107,7 @@ export function registerClassroomRoutes(server: Server) {
       return httpResponse.notFound('Turma não encontrada.');
     }
 
-    const removed = await mockSchoolModel.deleteClass(classroomId);
+    const removed = await classroomModel.deleteClass(classroomId);
 
     if (!removed) {
       return httpResponse.notFound('Turma não encontrada.');
@@ -123,7 +123,7 @@ export function registerClassroomRoutes(server: Server) {
       return httpResponse.notFound('Escola não encontrada.');
     }
 
-    const classrooms = mockSchoolModel.listClassrooms(schoolId);
+    const classrooms = classroomModel.listClassrooms(schoolId);
 
     if (!classrooms) {
       return httpResponse.notFound('Escola não encontrada.');
@@ -149,7 +149,7 @@ export function registerClassroomRoutes(server: Server) {
       return validationResult.response;
     }
 
-    const updatedSchool = await mockSchoolModel.createClassroom(
+    const updatedSchool = await classroomModel.createClassroom(
       schoolId,
       validationResult.data,
     );
@@ -175,7 +175,7 @@ export function registerClassroomRoutes(server: Server) {
         return httpResponse.notFound('Turma não encontrada.');
       }
 
-      if (!mockSchoolModel.getSchool(schoolId)) {
+      if (!schoolModel.get(schoolId)) {
         return httpResponse.notFound('Escola não encontrada.');
       }
 
@@ -189,7 +189,7 @@ export function registerClassroomRoutes(server: Server) {
         return validationResult.response;
       }
 
-      const updatedSchool = await mockSchoolModel.updateClassroom(
+      const updatedSchool = await classroomModel.updateClassroom(
         schoolId,
         classroomId,
         validationResult.data,
@@ -217,11 +217,11 @@ export function registerClassroomRoutes(server: Server) {
         return httpResponse.notFound('Turma não encontrada.');
       }
 
-      if (!mockSchoolModel.getSchool(schoolId)) {
+      if (!schoolModel.get(schoolId)) {
         return httpResponse.notFound('Escola não encontrada.');
       }
 
-      const updatedSchool = await mockSchoolModel.deleteClassroom(
+      const updatedSchool = await classroomModel.deleteClassroom(
         schoolId,
         classroomId,
       );

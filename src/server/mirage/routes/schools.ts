@@ -4,13 +4,13 @@ import {
   createSchoolDtoSchema,
   updateSchoolDtoSchema,
 } from '../dto/school.dto';
-import { mockSchoolModel } from '../models/mock-school.model';
+import { schoolModel } from '../models/mock-school.model';
 import { httpResponse } from '../utils/http-response';
 import { validateRequestBody } from '../utils/validate-request-body';
 
 export function registerSchoolRoutes(server: Server) {
   server.get('/schools', () => {
-    return httpResponse.ok(mockSchoolModel.listSchools());
+    return httpResponse.ok(schoolModel.list());
   });
 
   server.post('/schools', async (_schema, request) => {
@@ -25,7 +25,7 @@ export function registerSchoolRoutes(server: Server) {
     }
 
     return httpResponse.created(
-      await mockSchoolModel.createSchool(validationResult.data),
+      await schoolModel.create(validationResult.data),
     );
   });
 
@@ -46,7 +46,7 @@ export function registerSchoolRoutes(server: Server) {
       return validationResult.response;
     }
 
-    const nextSchool = await mockSchoolModel.updateSchool(
+    const nextSchool = await schoolModel.update(
       schoolId,
       validationResult.data,
     );
@@ -65,7 +65,7 @@ export function registerSchoolRoutes(server: Server) {
       return httpResponse.notFound('Escola não encontrada.');
     }
 
-    const removed = await mockSchoolModel.deleteSchool(schoolId);
+    const removed = await schoolModel.delete(schoolId);
 
     if (!removed) {
       return httpResponse.notFound('Escola não encontrada.');

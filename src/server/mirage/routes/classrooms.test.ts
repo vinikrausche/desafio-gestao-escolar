@@ -1,20 +1,22 @@
 import type { Server } from 'miragejs';
 
-import { mockSchoolModel } from '../models/mock-school.model';
+import { classroomModel } from '../models/mock-school.model';
 import { registerClassroomRoutes } from './classrooms';
 
 jest.mock('../models/mock-school.model', () => ({
-  mockSchoolModel: {
+  classroomModel: {
     createClass: jest.fn(),
     createClassroom: jest.fn(),
     deleteClass: jest.fn(),
     deleteClassroom: jest.fn(),
     getClass: jest.fn(),
-    getSchool: jest.fn(),
     listClasses: jest.fn(),
     listClassrooms: jest.fn(),
     updateClass: jest.fn(),
     updateClassroom: jest.fn(),
+  },
+  schoolModel: {
+    get: jest.fn(),
   },
 }));
 
@@ -102,6 +104,6 @@ describe('registerClassroomRoutes', () => {
       } as never,
     );
 
-    expect(mockSchoolModel.listClasses).toHaveBeenCalledWith('school-seed-1');
+    expect(classroomModel.listClasses).toHaveBeenCalledWith('school-seed-1');
   });
 });
