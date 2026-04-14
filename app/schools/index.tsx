@@ -1,13 +1,20 @@
 import { VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { FloatingActionButton } from '../../src/components/actions/floating-action-button';
+import { formatListCountLabel } from '../../src/components/filters/list-filter.utils';
+import { SearchFilterPanel } from '../../src/components/filters/search-filter-panel';
 import { StateCard } from '../../src/components/feedback/state-card';
 import { ListHeader } from '../../src/components/layout/list-header';
 import { ScreenShell } from '../../src/components/layout/screen-shell';
 import { SchoolListCard } from '../../src/features/schools/components/school-list-card';
+import {
+  defaultSchoolStatusFilter,
+  filterSchools,
+  schoolStatusFilterOptions,
+} from '../../src/features/schools/models/school-list-filter.model';
 import { schoolsScreenStyles as styles } from '../../src/features/schools/schools-screen.styles';
 import { useSchoolsStore } from '../../src/features/schools/store/schools.store';
 
@@ -20,23 +27,31 @@ export default function SchoolsScreen() {
   const schoolsById = useSchoolsStore((state) => state.schoolsById);
   const status = useSchoolsStore((state) => state.status);
   const [pendingSchoolId, setPendingSchoolId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState(defaultSchoolStatusFilter);
 
   useEffect(() => {
     void loadSchools().catch(() => undefined);
   }, [loadSchools]);
 
-  const schools = useMemo(
-    () =>
-      schoolIds
-        .map((schoolId) => schoolsById[schoolId])
-        .filter((school): school is NonNullable<typeof school> =>
-          Boolean(school),
-        ),
-    [schoolIds, schoolsById],
-  );
+  const schools = schoolIds
+    .map((schoolId) => schoolsById[schoolId])
+    .filter((school): school is NonNullable<typeof school> => Boolean(school));
+  const filteredSchools = filterSchools({
+    schools,
+    searchTerm,
+    statusFilter,
+  });
+  const hasActiveFilters =
+    searchTerm.trim().length > 0 || statusFilter !== defaultSchoolStatusFilter;
 
   const isLoadingSchools = status === 'idle' || status === 'loading';
   const hasSchoolLoadError = status === 'error';
+
+  function resetFilters() {
+    setSearchTerm('');
+    setStatusFilter(defaultSchoolStatusFilter);
+  }
 
   async function handleDeleteSchool(schoolId: string) {
     try {
@@ -87,7 +102,30 @@ export default function SchoolsScreen() {
       title="Gestão escolar"
     >
       <VStack style={styles.content}>
-        <ListHeader badgeLabel={`${schools.length} escolas`} title="Lista" />
+        {schools.length > 0 ? (
+          <SearchFilterPanel
+            defaultFilterValue={defaultSchoolStatusFilter}
+            filterLabel="Filtrar por situação"
+            filterOptions={schoolStatusFilterOptions}
+            filterValue={statusFilter}
+            onClear={resetFilters}
+            onFilterChange={setStatusFilter}
+            onSearchChange={setSearchTerm}
+            searchLabel="Buscar escola"
+            searchPlaceholder="Digite nome, endereço ou turma"
+            searchValue={searchTerm}
+          />
+        ) : null}
+
+        <ListHeader
+          badgeLabel={formatListCountLabel({
+            filteredCount: filteredSchools.length,
+            pluralLabel: 'escolas',
+            singularLabel: 'escola',
+            totalCount: schools.length,
+          })}
+          title="Lista"
+        />
 
         {isLoadingSchools ? (
           <StateCard
@@ -115,9 +153,24 @@ export default function SchoolsScreen() {
           <StateCard message="Nenhuma escola cadastrada." tone="surface" />
         ) : null}
 
-        {!isLoadingSchools && !hasSchoolLoadError && schools.length > 0 ? (
+        {!isLoadingSchools &&
+        !hasSchoolLoadError &&
+        schools.length > 0 &&
+        filteredSchools.length === 0 ? (
+          <StateCard
+            actionLabel={hasActiveFilters ? 'Limpar filtros' : undefined}
+            message="Nenhuma escola encontrada com os filtros informados."
+            onAction={hasActiveFilters ? resetFilters : undefined}
+            title="Sem resultados"
+            tone="soft"
+          />
+        ) : null}
+
+        {!isLoadingSchools &&
+        !hasSchoolLoadError &&
+        filteredSchools.length > 0 ? (
           <VStack style={styles.list}>
-            {schools.map((school) => (
+            {filteredSchools.map((school) => (
               <SchoolListCard
                 key={school.id}
                 onDelete={() => {

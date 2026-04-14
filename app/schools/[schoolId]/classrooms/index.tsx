@@ -4,11 +4,18 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 
 import { FloatingActionButton } from '../../../../src/components/actions/floating-action-button';
+import { formatListCountLabel } from '../../../../src/components/filters/list-filter.utils';
+import { SearchFilterPanel } from '../../../../src/components/filters/search-filter-panel';
 import { StateCard } from '../../../../src/components/feedback/state-card';
 import { ListHeader } from '../../../../src/components/layout/list-header';
 import { ScreenShell } from '../../../../src/components/layout/screen-shell';
 import { ClassroomListCard } from '../../../../src/features/classrooms/components/classroom-list-card';
 import { classroomsScreenStyles as styles } from '../../../../src/features/classrooms/classrooms-screen.styles';
+import {
+  classroomShiftFilterOptions,
+  defaultClassroomShiftFilter,
+  filterClassrooms,
+} from '../../../../src/features/classrooms/models/classroom-list-filter.model';
 import { useSchoolResource } from '../../../../src/features/schools/hooks/use-school-resource';
 import { useSchoolsStore } from '../../../../src/features/schools/store/schools.store';
 import { resolveRouteParam } from '../../../../src/lib/router/resolve-route-param';
@@ -29,6 +36,20 @@ export default function ClassroomsScreen() {
   const [pendingClassroomId, setPendingClassroomId] = useState<string | null>(
     null,
   );
+  const [searchTerm, setSearchTerm] = useState('');
+  const [shiftFilter, setShiftFilter] = useState(defaultClassroomShiftFilter);
+  const filteredClassrooms = filterClassrooms({
+    classrooms: school?.classrooms ?? [],
+    searchTerm,
+    shiftFilter,
+  });
+  const hasActiveFilters =
+    searchTerm.trim().length > 0 || shiftFilter !== defaultClassroomShiftFilter;
+
+  function resetFilters() {
+    setSearchTerm('');
+    setShiftFilter(defaultClassroomShiftFilter);
+  }
 
   async function handleDeleteClassroom(classroomId: string) {
     try {
@@ -127,9 +148,29 @@ export default function ClassroomsScreen() {
           />
         ) : null}
 
+        {school && school.classrooms.length > 0 ? (
+          <SearchFilterPanel
+            defaultFilterValue={defaultClassroomShiftFilter}
+            filterLabel="Filtrar por turno"
+            filterOptions={classroomShiftFilterOptions}
+            filterValue={shiftFilter}
+            onClear={resetFilters}
+            onFilterChange={setShiftFilter}
+            onSearchChange={setSearchTerm}
+            searchLabel="Buscar turma"
+            searchPlaceholder="Digite nome, turno ou ano letivo"
+            searchValue={searchTerm}
+          />
+        ) : null}
+
         {school ? (
           <ListHeader
-            badgeLabel={`${school.classrooms.length} turmas`}
+            badgeLabel={formatListCountLabel({
+              filteredCount: filteredClassrooms.length,
+              pluralLabel: 'turmas',
+              singularLabel: 'turma',
+              totalCount: school.classrooms.length,
+            })}
             title="Lista"
           />
         ) : null}
@@ -150,9 +191,21 @@ export default function ClassroomsScreen() {
           />
         ) : null}
 
-        {school && school.classrooms.length > 0 ? (
+        {school &&
+        school.classrooms.length > 0 &&
+        filteredClassrooms.length === 0 ? (
+          <StateCard
+            actionLabel={hasActiveFilters ? 'Limpar filtros' : undefined}
+            message="Nenhuma turma encontrada com os filtros informados."
+            onAction={hasActiveFilters ? resetFilters : undefined}
+            title="Sem resultados"
+            tone="soft"
+          />
+        ) : null}
+
+        {school && filteredClassrooms.length > 0 ? (
           <VStack style={styles.list}>
-            {school.classrooms.map((classroom) => (
+            {filteredClassrooms.map((classroom) => (
               <ClassroomListCard
                 classroom={classroom}
                 key={classroom.id}
