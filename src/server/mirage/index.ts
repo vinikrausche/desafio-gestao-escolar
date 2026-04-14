@@ -4,15 +4,13 @@ import { createServer, type Server } from 'miragejs';
 
 import { API_BASE_URL } from '../../lib/api/constants';
 import { handlers } from './routes';
-import { resetMockDb } from './seeds/in-memory-db';
+import { hydrateMockDb } from './seeds/in-memory-db';
 
 declare global {
   var __mirageServer__: Server | undefined;
 }
 
 function makeServer() {
-  resetMockDb();
-
   return createServer({
     environment: 'development',
     routes() {
@@ -26,6 +24,7 @@ function makeServer() {
 
 export async function startMockServer() {
   if (!globalThis.__mirageServer__) {
+    await hydrateMockDb();
     globalThis.__mirageServer__ = makeServer();
   }
 
