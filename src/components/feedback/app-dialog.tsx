@@ -37,8 +37,15 @@ export function AppDialog({
     confirmLabel ?? (onConfirm ? 'Confirmar' : 'Fechar');
 
   return (
-    <AlertDialog closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
-      <AlertDialogBackdrop />
+    <AlertDialog
+      animationPreset="fade"
+      closeOnOverlayClick={false}
+      isOpen={isOpen}
+      onClose={onClose}
+      style={styles.root}
+      useRNModal
+    >
+      <AlertDialogBackdrop style={styles.backdrop} />
 
       <AlertDialogContent style={styles.content}>
         <AlertDialogHeader style={styles.header}>

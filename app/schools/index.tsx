@@ -1,6 +1,6 @@
 import { VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import { FloatingActionButton } from '../../src/components/actions/floating-action-button';
 import { formatListCountLabel } from '../../src/components/filters/list-filter.utils';
@@ -104,7 +104,7 @@ export default function SchoolsScreen() {
       confirmLabel: 'Excluir',
       confirmVariant: 'dangerSoft',
       isOpen: true,
-      message: `Deseja excluir a escola "${schoolName}"? As turmas vinculadas tambem serao removidas.`,
+      message: `Deseja excluir a escola "${schoolName}"? As turmas vinculadas tambem serão removidas.`,
       onConfirm: () => {
         closeDialog();
         void handleDeleteSchool(schoolId);
@@ -114,128 +114,130 @@ export default function SchoolsScreen() {
   }
 
   return (
-    <ScreenShell
-      description="Cadastre, acompanhe e mantenha atualizada a base das escolas municipais e de suas turmas."
-      eyebrow="Escolas"
-      floatingAction={
-        <FloatingActionButton
-          accessibilityLabel="Cadastrar escola"
-          onPress={() => router.push('/schools/new')}
-        />
-      }
-      title="Gestão escolar"
-    >
-      <VStack style={styles.content}>
-        {schools.length > 0 ? (
-          <SearchFilterPanel
-            defaultFilterValue={defaultSchoolStatusFilter}
-            filterLabel="Filtrar por situação"
-            filterOptions={schoolStatusFilterOptions}
-            filterValue={statusFilter}
-            onClear={resetFilters}
-            onFilterChange={setStatusFilter}
-            onSearchChange={setSearchTerm}
-            searchLabel="Buscar escola"
-            searchPlaceholder="Digite nome, endereço ou turma"
-            searchValue={searchTerm}
+    <Fragment>
+      <ScreenShell
+        description="Cadastre, acompanhe e mantenha atualizada a base das escolas municipais e de suas turmas."
+        eyebrow="Escolas"
+        floatingAction={
+          <FloatingActionButton
+            accessibilityLabel="Cadastrar escola"
+            onPress={() => router.push('/schools/new')}
           />
-        ) : null}
+        }
+        title="Gestão escolar"
+      >
+        <VStack style={styles.content}>
+          {schools.length > 0 ? (
+            <SearchFilterPanel
+              defaultFilterValue={defaultSchoolStatusFilter}
+              filterLabel="Filtrar por situação"
+              filterOptions={schoolStatusFilterOptions}
+              filterValue={statusFilter}
+              onClear={resetFilters}
+              onFilterChange={setStatusFilter}
+              onSearchChange={setSearchTerm}
+              searchLabel="Buscar escola"
+              searchPlaceholder="Digite nome, endereço ou turma"
+              searchValue={searchTerm}
+            />
+          ) : null}
 
-        <ListHeader
-          badgeLabel={formatListCountLabel({
-            filteredCount: filteredSchools.length,
-            pluralLabel: 'escolas',
-            singularLabel: 'escola',
-            totalCount: schools.length,
-          })}
-          title="Lista"
-        />
-
-        {isLoadingSchools ? (
-          <StateCard
-            layout="row"
-            message="Carregando escolas..."
-            minHeight={120}
-            showSpinner
-            tone="surface"
+          <ListHeader
+            badgeLabel={formatListCountLabel({
+              filteredCount: filteredSchools.length,
+              pluralLabel: 'escolas',
+              singularLabel: 'escola',
+              totalCount: schools.length,
+            })}
+            title="Lista"
           />
-        ) : null}
 
-        {hasSchoolLoadError ? (
-          <StateCard
-            actionLabel="Tentar novamente"
-            message={errorMessage ?? 'Nao foi possivel carregar as escolas.'}
-            onAction={() => {
-              void loadSchools({ force: true }).catch(() => undefined);
-            }}
-            title="Falha ao carregar"
-            tone="error"
-          />
-        ) : null}
+          {isLoadingSchools ? (
+            <StateCard
+              layout="row"
+              message="Carregando escolas..."
+              minHeight={120}
+              showSpinner
+              tone="surface"
+            />
+          ) : null}
 
-        {!isLoadingSchools && !hasSchoolLoadError && schools.length === 0 ? (
-          <StateCard message="Nenhuma escola cadastrada." tone="surface" />
-        ) : null}
+          {hasSchoolLoadError ? (
+            <StateCard
+              actionLabel="Tentar novamente"
+              message={errorMessage ?? 'Nao foi possivel carregar as escolas.'}
+              onAction={() => {
+                void loadSchools({ force: true }).catch(() => undefined);
+              }}
+              title="Falha ao carregar"
+              tone="error"
+            />
+          ) : null}
 
-        {!isLoadingSchools &&
-        !hasSchoolLoadError &&
-        schools.length > 0 &&
-        filteredSchools.length === 0 ? (
-          <StateCard
-            actionLabel={hasActiveFilters ? 'Limpar filtros' : undefined}
-            message="Nenhuma escola encontrada com os filtros informados."
-            onAction={hasActiveFilters ? resetFilters : undefined}
-            title="Sem resultados"
-            tone="soft"
-          />
-        ) : null}
+          {!isLoadingSchools && !hasSchoolLoadError && schools.length === 0 ? (
+            <StateCard message="Nenhuma escola cadastrada." tone="surface" />
+          ) : null}
 
-        {!isLoadingSchools &&
-        !hasSchoolLoadError &&
-        filteredSchools.length > 0 ? (
-          <VStack style={styles.list}>
-            {filteredSchools.map((school) => (
-              <SchoolListCard
-                key={school.id}
-                onDelete={() => {
-                  if (pendingSchoolId === school.id) {
-                    return;
+          {!isLoadingSchools &&
+          !hasSchoolLoadError &&
+          schools.length > 0 &&
+          filteredSchools.length === 0 ? (
+            <StateCard
+              actionLabel={hasActiveFilters ? 'Limpar filtros' : undefined}
+              message="Nenhuma escola encontrada com os filtros informados."
+              onAction={hasActiveFilters ? resetFilters : undefined}
+              title="Sem resultados"
+              tone="soft"
+            />
+          ) : null}
+
+          {!isLoadingSchools &&
+          !hasSchoolLoadError &&
+          filteredSchools.length > 0 ? (
+            <VStack style={styles.list}>
+              {filteredSchools.map((school) => (
+                <SchoolListCard
+                  key={school.id}
+                  onDelete={() => {
+                    if (pendingSchoolId === school.id) {
+                      return;
+                    }
+
+                    confirmDeleteSchool(school.id, school.name);
+                  }}
+                  onEdit={() =>
+                    router.push({
+                      params: {
+                        schoolId: school.id,
+                      },
+                      pathname: '/schools/[schoolId]/edit',
+                    })
                   }
+                  onManageClassrooms={() =>
+                    router.push({
+                      params: {
+                        schoolId: school.id,
+                      },
+                      pathname: '/schools/[schoolId]/classrooms',
+                    })
+                  }
+                  school={school}
+                />
+              ))}
+            </VStack>
+          ) : null}
+        </VStack>
+      </ScreenShell>
 
-                  confirmDeleteSchool(school.id, school.name);
-                }}
-                onEdit={() =>
-                  router.push({
-                    params: {
-                      schoolId: school.id,
-                    },
-                    pathname: '/schools/[schoolId]/edit',
-                  })
-                }
-                onManageClassrooms={() =>
-                  router.push({
-                    params: {
-                      schoolId: school.id,
-                    },
-                    pathname: '/schools/[schoolId]/classrooms',
-                  })
-                }
-                school={school}
-              />
-            ))}
-          </VStack>
-        ) : null}
-
-        <AppDialog
-          confirmLabel={dialogState.confirmLabel}
-          confirmVariant={dialogState.confirmVariant}
-          isOpen={dialogState.isOpen}
-          message={dialogState.message}
-          onClose={closeDialog}
-          onConfirm={dialogState.onConfirm}
-          title={dialogState.title}
-        />
-      </VStack>
-    </ScreenShell>
+      <AppDialog
+        confirmLabel={dialogState.confirmLabel}
+        confirmVariant={dialogState.confirmVariant}
+        isOpen={dialogState.isOpen}
+        message={dialogState.message}
+        onClose={closeDialog}
+        onConfirm={dialogState.onConfirm}
+        title={dialogState.title}
+      />
+    </Fragment>
   );
 }

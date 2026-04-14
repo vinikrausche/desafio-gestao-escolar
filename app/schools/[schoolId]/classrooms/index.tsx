@@ -1,6 +1,6 @@
 import { Text, VStack } from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import { FloatingActionButton } from '../../../../src/components/actions/floating-action-button';
 import { formatListCountLabel } from '../../../../src/components/filters/list-filter.utils';
@@ -114,161 +114,163 @@ export default function ClassroomsScreen() {
   }
 
   return (
-    <ScreenShell
-      description={
-        school
-          ? `Gerencie as turmas vinculadas à ${school.name}.`
-          : 'Gerencie as turmas vinculadas à escola selecionada.'
-      }
-      eyebrow="Turmas"
-      floatingAction={
-        school ? (
-          <FloatingActionButton
-            accessibilityLabel="Cadastrar turma"
-            onPress={() =>
-              router.push({
-                params: {
-                  schoolId: resolvedSchoolId,
-                },
-                pathname: '/schools/[schoolId]/classrooms/new',
-              })
-            }
-          />
-        ) : undefined
-      }
-      title="Turmas da escola"
-    >
-      <VStack style={styles.content}>
-        {school ? (
-          <VStack style={styles.schoolSummary}>
-            <Text style={styles.schoolName}>{school.name}</Text>
-            <Text style={styles.schoolAddress}>{school.address}</Text>
-          </VStack>
-        ) : null}
+    <Fragment>
+      <ScreenShell
+        description={
+          school
+            ? `Gerencie as turmas vinculadas à ${school.name}.`
+            : 'Gerencie as turmas vinculadas à escola selecionada.'
+        }
+        eyebrow="Turmas"
+        floatingAction={
+          school ? (
+            <FloatingActionButton
+              accessibilityLabel="Cadastrar turma"
+              onPress={() =>
+                router.push({
+                  params: {
+                    schoolId: resolvedSchoolId,
+                  },
+                  pathname: '/schools/[schoolId]/classrooms/new',
+                })
+              }
+            />
+          ) : undefined
+        }
+        title="Turmas da escola"
+      >
+        <VStack style={styles.content}>
+          {school ? (
+            <VStack style={styles.schoolSummary}>
+              <Text style={styles.schoolName}>{school.name}</Text>
+              <Text style={styles.schoolAddress}>{school.address}</Text>
+            </VStack>
+          ) : null}
 
-        {isLoadingSchool ? (
-          <StateCard
-            layout="row"
-            message="Carregando turmas..."
-            minHeight={120}
-            showSpinner
-            tone="surface"
-          />
-        ) : null}
+          {isLoadingSchool ? (
+            <StateCard
+              layout="row"
+              message="Carregando turmas..."
+              minHeight={120}
+              showSpinner
+              tone="surface"
+            />
+          ) : null}
 
-        {hasSchoolLoadError ? (
-          <StateCard
-            actionLabel="Tentar novamente"
-            message={errorMessage ?? 'Nao foi possivel carregar as turmas.'}
-            onAction={() => void refreshSchool()}
-            title="Falha ao carregar"
-            tone="error"
-          />
-        ) : null}
+          {hasSchoolLoadError ? (
+            <StateCard
+              actionLabel="Tentar novamente"
+              message={errorMessage ?? 'Nao foi possivel carregar as turmas.'}
+              onAction={() => void refreshSchool()}
+              title="Falha ao carregar"
+              tone="error"
+            />
+          ) : null}
 
-        {isSchoolMissing ? (
-          <StateCard
-            actionLabel="Voltar para escolas"
-            actionVariant="secondary"
-            message="Escola nao encontrada."
-            onAction={() => router.replace('/schools')}
-            tone="soft"
-          />
-        ) : null}
+          {isSchoolMissing ? (
+            <StateCard
+              actionLabel="Voltar para escolas"
+              actionVariant="secondary"
+              message="Escola nao encontrada."
+              onAction={() => router.replace('/schools')}
+              tone="soft"
+            />
+          ) : null}
 
-        {school && school.classrooms.length > 0 ? (
-          <SearchFilterPanel
-            defaultFilterValue={defaultClassroomShiftFilter}
-            filterLabel="Filtrar por turno"
-            filterOptions={classroomShiftFilterOptions}
-            filterValue={shiftFilter}
-            onClear={resetFilters}
-            onFilterChange={setShiftFilter}
-            onSearchChange={setSearchTerm}
-            searchLabel="Buscar turma"
-            searchPlaceholder="Digite nome, turno ou ano letivo"
-            searchValue={searchTerm}
-          />
-        ) : null}
+          {school && school.classrooms.length > 0 ? (
+            <SearchFilterPanel
+              defaultFilterValue={defaultClassroomShiftFilter}
+              filterLabel="Filtrar por turno"
+              filterOptions={classroomShiftFilterOptions}
+              filterValue={shiftFilter}
+              onClear={resetFilters}
+              onFilterChange={setShiftFilter}
+              onSearchChange={setSearchTerm}
+              searchLabel="Buscar turma"
+              searchPlaceholder="Digite nome, turno ou ano letivo"
+              searchValue={searchTerm}
+            />
+          ) : null}
 
-        {school ? (
-          <ListHeader
-            badgeLabel={formatListCountLabel({
-              filteredCount: filteredClassrooms.length,
-              pluralLabel: 'turmas',
-              singularLabel: 'turma',
-              totalCount: school.classrooms.length,
-            })}
-            title="Lista"
-          />
-        ) : null}
+          {school ? (
+            <ListHeader
+              badgeLabel={formatListCountLabel({
+                filteredCount: filteredClassrooms.length,
+                pluralLabel: 'turmas',
+                singularLabel: 'turma',
+                totalCount: school.classrooms.length,
+              })}
+              title="Lista"
+            />
+          ) : null}
 
-        {school && school.classrooms.length === 0 ? (
-          <StateCard
-            actionLabel="Cadastrar primeira turma"
-            message="Nenhuma turma cadastrada para esta escola."
-            onAction={() =>
-              router.push({
-                params: {
-                  schoolId: resolvedSchoolId,
-                },
-                pathname: '/schools/[schoolId]/classrooms/new',
-              })
-            }
-            tone="surface"
-          />
-        ) : null}
+          {school && school.classrooms.length === 0 ? (
+            <StateCard
+              actionLabel="Cadastrar primeira turma"
+              message="Nenhuma turma cadastrada para esta escola."
+              onAction={() =>
+                router.push({
+                  params: {
+                    schoolId: resolvedSchoolId,
+                  },
+                  pathname: '/schools/[schoolId]/classrooms/new',
+                })
+              }
+              tone="surface"
+            />
+          ) : null}
 
-        {school &&
-        school.classrooms.length > 0 &&
-        filteredClassrooms.length === 0 ? (
-          <StateCard
-            actionLabel={hasActiveFilters ? 'Limpar filtros' : undefined}
-            message="Nenhuma turma encontrada com os filtros informados."
-            onAction={hasActiveFilters ? resetFilters : undefined}
-            title="Sem resultados"
-            tone="soft"
-          />
-        ) : null}
+          {school &&
+          school.classrooms.length > 0 &&
+          filteredClassrooms.length === 0 ? (
+            <StateCard
+              actionLabel={hasActiveFilters ? 'Limpar filtros' : undefined}
+              message="Nenhuma turma encontrada com os filtros informados."
+              onAction={hasActiveFilters ? resetFilters : undefined}
+              title="Sem resultados"
+              tone="soft"
+            />
+          ) : null}
 
-        {school && filteredClassrooms.length > 0 ? (
-          <VStack style={styles.list}>
-            {filteredClassrooms.map((classroom) => (
-              <ClassroomListCard
-                classroom={classroom}
-                key={classroom.id}
-                onDelete={() => {
-                  if (pendingClassroomId === classroom.id) {
-                    return;
+          {school && filteredClassrooms.length > 0 ? (
+            <VStack style={styles.list}>
+              {filteredClassrooms.map((classroom) => (
+                <ClassroomListCard
+                  classroom={classroom}
+                  key={classroom.id}
+                  onDelete={() => {
+                    if (pendingClassroomId === classroom.id) {
+                      return;
+                    }
+
+                    confirmDeleteClassroom(classroom.id, classroom.name);
+                  }}
+                  onEdit={() =>
+                    router.push({
+                      params: {
+                        classroomId: classroom.id,
+                        schoolId: resolvedSchoolId,
+                      },
+                      pathname:
+                        '/schools/[schoolId]/classrooms/[classroomId]/edit',
+                    })
                   }
+                />
+              ))}
+            </VStack>
+          ) : null}
+        </VStack>
+      </ScreenShell>
 
-                  confirmDeleteClassroom(classroom.id, classroom.name);
-                }}
-                onEdit={() =>
-                  router.push({
-                    params: {
-                      classroomId: classroom.id,
-                      schoolId: resolvedSchoolId,
-                    },
-                    pathname:
-                      '/schools/[schoolId]/classrooms/[classroomId]/edit',
-                  })
-                }
-              />
-            ))}
-          </VStack>
-        ) : null}
-
-        <AppDialog
-          confirmLabel={dialogState.confirmLabel}
-          confirmVariant={dialogState.confirmVariant}
-          isOpen={dialogState.isOpen}
-          message={dialogState.message}
-          onClose={closeDialog}
-          onConfirm={dialogState.onConfirm}
-          title={dialogState.title}
-        />
-      </VStack>
-    </ScreenShell>
+      <AppDialog
+        confirmLabel={dialogState.confirmLabel}
+        confirmVariant={dialogState.confirmVariant}
+        isOpen={dialogState.isOpen}
+        message={dialogState.message}
+        onClose={closeDialog}
+        onConfirm={dialogState.onConfirm}
+        title={dialogState.title}
+      />
+    </Fragment>
   );
 }

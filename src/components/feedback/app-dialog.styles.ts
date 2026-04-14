@@ -3,6 +3,9 @@ import { StyleSheet } from 'react-native';
 import { appShadows, appTheme } from '../../theme/app-theme';
 
 export const appDialogStyles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: 'rgba(11, 31, 33, 0.52)',
+  },
   body: {
     paddingBottom: 8,
     paddingHorizontal: 20,
@@ -30,6 +33,13 @@ export const appDialogStyles = StyleSheet.create({
     paddingBottom: 12,
     paddingHorizontal: 20,
     paddingTop: 20,
+  },
+  root: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 24,
   },
   message: {
     color: appTheme.colors.textSecondary,
