@@ -1,10 +1,10 @@
 import { Text, VStack } from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert } from 'react-native';
 
 import { FloatingActionButton } from '../../../../src/components/actions/floating-action-button';
 import { formatListCountLabel } from '../../../../src/components/filters/list-filter.utils';
+import { AppDialog } from '../../../../src/components/feedback/app-dialog';
 import { SearchFilterPanel } from '../../../../src/components/filters/search-filter-panel';
 import { StateCard } from '../../../../src/components/feedback/state-card';
 import { ListHeader } from '../../../../src/components/layout/list-header';
@@ -18,8 +18,25 @@ import {
 } from '../../../../src/features/classrooms/models/classroom-list-filter.model';
 import { useSchoolResource } from '../../../../src/features/schools/hooks/use-school-resource';
 import { useSchoolsStore } from '../../../../src/features/schools/store/schools.store';
-import { confirmAction } from '../../../../src/lib/platform/confirm-action';
 import { resolveRouteParam } from '../../../../src/lib/router/resolve-route-param';
+import type { AppButtonVariant } from '../../../../src/components/actions/app-button';
+
+type DialogState = {
+  confirmLabel?: string;
+  confirmVariant?: AppButtonVariant;
+  isOpen: boolean;
+  message: string;
+  onConfirm?: () => void;
+  title: string;
+};
+
+function createClosedDialogState(): DialogState {
+  return {
+    isOpen: false,
+    message: '',
+    title: '',
+  };
+}
 
 export default function ClassroomsScreen() {
   const router = useRouter();
@@ -39,6 +56,9 @@ export default function ClassroomsScreen() {
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [shiftFilter, setShiftFilter] = useState(defaultClassroomShiftFilter);
+  const [dialogState, setDialogState] = useState<DialogState>(
+    createClosedDialogState,
+  );
   const filteredClassrooms = filterClassrooms({
     classrooms: school?.classrooms ?? [],
     searchTerm,
@@ -52,6 +72,10 @@ export default function ClassroomsScreen() {
     setShiftFilter(defaultClassroomShiftFilter);
   }
 
+  function closeDialog() {
+    setDialogState(createClosedDialogState());
+  }
+
   async function handleDeleteClassroom(classroomId: string) {
     try {
       setPendingClassroomId(classroomId);
@@ -62,7 +86,12 @@ export default function ClassroomsScreen() {
           ? error.message
           : 'Nao foi possivel excluir a turma.';
 
-      Alert.alert('Erro ao excluir', message);
+      setDialogState({
+        confirmLabel: 'Fechar',
+        isOpen: true,
+        message,
+        title: 'Erro ao excluir',
+      });
     } finally {
       setPendingClassroomId((current) =>
         current === classroomId ? null : current,
@@ -71,10 +100,13 @@ export default function ClassroomsScreen() {
   }
 
   function confirmDeleteClassroom(classroomId: string, classroomName: string) {
-    confirmAction({
+    setDialogState({
       confirmLabel: 'Excluir',
+      confirmVariant: 'dangerSoft',
+      isOpen: true,
       message: `Deseja excluir a turma "${classroomName}"?`,
       onConfirm: () => {
+        closeDialog();
         void handleDeleteClassroom(classroomId);
       },
       title: 'Excluir turma',
@@ -226,6 +258,16 @@ export default function ClassroomsScreen() {
             ))}
           </VStack>
         ) : null}
+
+        <AppDialog
+          confirmLabel={dialogState.confirmLabel}
+          confirmVariant={dialogState.confirmVariant}
+          isOpen={dialogState.isOpen}
+          message={dialogState.message}
+          onClose={closeDialog}
+          onConfirm={dialogState.onConfirm}
+          title={dialogState.title}
+        />
       </VStack>
     </ScreenShell>
   );

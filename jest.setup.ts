@@ -98,9 +98,24 @@ jest.mock('@gluestack-ui/themed', () => {
     ) => React.createElement(TextInput, { ...props, multiline: true, ref }),
   );
 
+  const AlertDialog = ({
+    children,
+    isOpen,
+  }: {
+    children?: ReactNode;
+    isOpen?: boolean;
+    [key: string]: unknown;
+  }) => (isOpen ? React.createElement(View, null, children) : null);
+
   const Icon = createViewComponent('MockIcon');
 
   return {
+    AlertDialog,
+    AlertDialogBackdrop: createViewComponent('MockAlertDialogBackdrop'),
+    AlertDialogBody: createViewComponent('MockAlertDialogBody'),
+    AlertDialogContent: createViewComponent('MockAlertDialogContent'),
+    AlertDialogFooter: createViewComponent('MockAlertDialogFooter'),
+    AlertDialogHeader: createViewComponent('MockAlertDialogHeader'),
     Badge: createViewComponent('MockBadge'),
     BadgeText: createTextComponent('MockBadgeText'),
     Button,

@@ -1,10 +1,10 @@
 import { VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { FloatingActionButton } from '../../src/components/actions/floating-action-button';
 import { formatListCountLabel } from '../../src/components/filters/list-filter.utils';
+import { AppDialog } from '../../src/components/feedback/app-dialog';
 import { SearchFilterPanel } from '../../src/components/filters/search-filter-panel';
 import { StateCard } from '../../src/components/feedback/state-card';
 import { ListHeader } from '../../src/components/layout/list-header';
@@ -17,7 +17,24 @@ import {
 } from '../../src/features/schools/models/school-list-filter.model';
 import { schoolsScreenStyles as styles } from '../../src/features/schools/schools-screen.styles';
 import { useSchoolsStore } from '../../src/features/schools/store/schools.store';
-import { confirmAction } from '../../src/lib/platform/confirm-action';
+import type { AppButtonVariant } from '../../src/components/actions/app-button';
+
+type DialogState = {
+  confirmLabel?: string;
+  confirmVariant?: AppButtonVariant;
+  isOpen: boolean;
+  message: string;
+  onConfirm?: () => void;
+  title: string;
+};
+
+function createClosedDialogState(): DialogState {
+  return {
+    isOpen: false,
+    message: '',
+    title: '',
+  };
+}
 
 export default function SchoolsScreen() {
   const router = useRouter();
@@ -30,6 +47,9 @@ export default function SchoolsScreen() {
   const [pendingSchoolId, setPendingSchoolId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(defaultSchoolStatusFilter);
+  const [dialogState, setDialogState] = useState<DialogState>(
+    createClosedDialogState,
+  );
 
   useEffect(() => {
     void loadSchools().catch(() => undefined);
@@ -54,6 +74,10 @@ export default function SchoolsScreen() {
     setStatusFilter(defaultSchoolStatusFilter);
   }
 
+  function closeDialog() {
+    setDialogState(createClosedDialogState());
+  }
+
   async function handleDeleteSchool(schoolId: string) {
     try {
       setPendingSchoolId(schoolId);
@@ -64,17 +88,25 @@ export default function SchoolsScreen() {
           ? error.message
           : 'Nao foi possivel excluir a escola.';
 
-      Alert.alert('Erro ao excluir', message);
+      setDialogState({
+        confirmLabel: 'Fechar',
+        isOpen: true,
+        message,
+        title: 'Erro ao excluir',
+      });
     } finally {
       setPendingSchoolId((current) => (current === schoolId ? null : current));
     }
   }
 
   function confirmDeleteSchool(schoolId: string, schoolName: string) {
-    confirmAction({
+    setDialogState({
       confirmLabel: 'Excluir',
+      confirmVariant: 'dangerSoft',
+      isOpen: true,
       message: `Deseja excluir a escola "${schoolName}"? As turmas vinculadas tambem serao removidas.`,
       onConfirm: () => {
+        closeDialog();
         void handleDeleteSchool(schoolId);
       },
       title: 'Excluir escola',
@@ -193,6 +225,16 @@ export default function SchoolsScreen() {
             ))}
           </VStack>
         ) : null}
+
+        <AppDialog
+          confirmLabel={dialogState.confirmLabel}
+          confirmVariant={dialogState.confirmVariant}
+          isOpen={dialogState.isOpen}
+          message={dialogState.message}
+          onClose={closeDialog}
+          onConfirm={dialogState.onConfirm}
+          title={dialogState.title}
+        />
       </VStack>
     </ScreenShell>
   );
