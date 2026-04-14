@@ -86,7 +86,7 @@ export default function SchoolsScreen() {
       const message =
         error instanceof Error
           ? error.message
-          : 'Nao foi possivel excluir a escola.';
+          : 'Nao foi possível excluir a escola.';
 
       setDialogState({
         confirmLabel: 'Fechar',

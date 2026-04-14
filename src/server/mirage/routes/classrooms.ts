@@ -1,6 +1,7 @@
 import type { Server } from 'miragejs';
 
 import {
+  createClassDtoSchema,
   createClassroomDtoSchema,
   updateClassroomDtoSchema,
 } from '../dto/classroom.dto';
@@ -17,6 +18,102 @@ function readClassroomId(params: Record<string, string | undefined>) {
 }
 
 export function registerClassroomRoutes(server: Server) {
+  // O recurso plano atende integracoes que esperam um endpoint literal `/classes`.
+  server.get('/classes', (_schema, request) => {
+    const schoolId =
+      typeof request.queryParams.schoolId === 'string'
+        ? request.queryParams.schoolId
+        : undefined;
+    const classes = mockSchoolModel.listClasses(schoolId);
+
+    if (schoolId && !classes) {
+      return httpResponse.notFound('Escola não encontrada.');
+    }
+
+    return httpResponse.ok(classes ?? []);
+  });
+
+  server.get('/classes/:classroomId', (_schema, request) => {
+    const classroomId = readClassroomId(request.params);
+
+    if (!classroomId) {
+      return httpResponse.notFound('Turma não encontrada.');
+    }
+
+    const classroom = mockSchoolModel.getClass(classroomId);
+
+    if (!classroom) {
+      return httpResponse.notFound('Turma não encontrada.');
+    }
+
+    return httpResponse.ok(classroom);
+  });
+
+  server.post('/classes', (_schema, request) => {
+    const validationResult = validateRequestBody(
+      request,
+      createClassDtoSchema,
+      'Payload inválido para criação de turma.',
+    );
+
+    if (!validationResult.success) {
+      return validationResult.response;
+    }
+
+    const createdClass = mockSchoolModel.createClass(validationResult.data);
+
+    if (!createdClass) {
+      return httpResponse.notFound('Escola não encontrada.');
+    }
+
+    return httpResponse.created(createdClass);
+  });
+
+  server.put('/classes/:classroomId', (_schema, request) => {
+    const classroomId = readClassroomId(request.params);
+
+    if (!classroomId) {
+      return httpResponse.notFound('Turma não encontrada.');
+    }
+
+    const validationResult = validateRequestBody(
+      request,
+      updateClassroomDtoSchema,
+      'Payload inválido para atualização de turma.',
+    );
+
+    if (!validationResult.success) {
+      return validationResult.response;
+    }
+
+    const updatedClass = mockSchoolModel.updateClass(
+      classroomId,
+      validationResult.data,
+    );
+
+    if (!updatedClass) {
+      return httpResponse.notFound('Turma não encontrada.');
+    }
+
+    return httpResponse.ok(updatedClass);
+  });
+
+  server.delete('/classes/:classroomId', (_schema, request) => {
+    const classroomId = readClassroomId(request.params);
+
+    if (!classroomId) {
+      return httpResponse.notFound('Turma não encontrada.');
+    }
+
+    const removed = mockSchoolModel.deleteClass(classroomId);
+
+    if (!removed) {
+      return httpResponse.notFound('Turma não encontrada.');
+    }
+
+    return httpResponse.noContent();
+  });
+
   server.get('/schools/:schoolId/classrooms', (_schema, request) => {
     const schoolId = readSchoolId(request.params);
 

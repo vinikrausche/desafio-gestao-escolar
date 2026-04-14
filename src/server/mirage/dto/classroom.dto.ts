@@ -13,6 +13,12 @@ export const createClassroomDtoSchema = z
   })
   .strict();
 
+export const createClassDtoSchema = createClassroomDtoSchema
+  .extend({
+    schoolId: z.string().trim().min(1, 'A escola da turma é obrigatória.'),
+  })
+  .strict();
+
 export const updateClassroomDtoSchema = createClassroomDtoSchema;
 
 export const classroomPayloadSchema = createClassroomDtoSchema
@@ -22,4 +28,5 @@ export const classroomPayloadSchema = createClassroomDtoSchema
   .strict();
 
 export type CreateClassroomPayload = z.infer<typeof createClassroomDtoSchema>;
+export type CreateClassPayload = z.infer<typeof createClassDtoSchema>;
 export type UpdateClassroomPayload = z.infer<typeof updateClassroomDtoSchema>;

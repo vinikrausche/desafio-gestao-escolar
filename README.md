@@ -1,74 +1,59 @@
 # Gestao Escolar Mobile
 
-Aplicativo mobile multiplataforma em React Native com Expo para centralizar o cadastro das escolas publicas municipais e de suas turmas. O repositorio ja contem a base tecnica do projeto e a primeira entrega funcional do modulo de escolas, com CRUD de escolas e turmas associadas usando API mockada localmente.
+Aplicativo multiplataforma em React Native com Expo para centralizar o cadastro de escolas publicas e turmas da rede municipal.
 
-## Objetivo do projeto
+O projeto foi estruturado por dominio, com foco em Clean Code, S.O.L.I.D., componentes reutilizaveis e separacao clara entre UI, estado, servicos e back-end mockado.
 
-A prefeitura de uma cidade do interior precisa substituir o controle manual em planilhas Excel por um aplicativo mobile que concentre:
+## Requisitos atendidos
 
-- cadastro de escolas publicas
-- cadastro de turmas vinculadas a cada escola
-- base unica de dados para Android e iOS
-
-## Stack e versoes
-
-- Node recomendado para desenvolvimento, build e CI: `>= 20.19.4`
-- arquivo `.nvmrc` incluido com `20.19.4`
-- campo `engines.node` configurado no `package.json`
-- Expo: `~55.0.6`
-- React: `19.2.0`
-- React Native: `0.83.2`
-- TypeScript: `~5.9.2`
-- Expo Router: `~55.0.5`
-- Gluestack UI: `@gluestack-ui/themed ^1.1.73`
-- Zustand: `^5.0.12`
-- MirageJS: `^0.1.48`
-
-Essa base atende ao requisito de Expo SDK 54 ou superior com React 19 e React Native 0.81 ou superior.
-
-## O que ja esta pronto
-
-- scaffold do app com Expo Router
-- TypeScript em modo `strict`
-- provider global com Gluestack UI, Safe Area e Gesture Handler
-- store base com Zustand para bootstrap do app
-- mock API local com MirageJS em memoria
-- cliente HTTP base e constante de `API_BASE_URL`
-- Jest + Testing Library React Native configurados
-- ESLint + Prettier configurados
-- pipeline de CI com GitHub Actions
-- modulo de escolas com listagem, cadastro, edicao e exclusao
-- suporte a turmas associadas dentro de cada escola
-- seeds iniciais para escolas e turmas
+- Expo SDK `~55.0.6`
+- React `19.2.0`
+- React Native `0.83.2`
+- TypeScript `~5.9.2`
+- Navegacao com `expo-router`
+- UI com `@gluestack-ui/themed`
+- Estado com `zustand`
+- Back-end simulado com `miragejs`
+- Persistencia offline opcional com `@react-native-async-storage/async-storage`
+- Testes com `jest` e `@testing-library/react-native`
 
 ## Funcionalidades implementadas
 
 ### Modulo de Escolas
 
-- listar escolas com nome, endereco e quantidade de turmas
-- cadastrar escola com nome e endereco obrigatorios
-- editar escola existente
-- excluir escola com confirmacao
-- adicionar e remover turmas no formulario da escola
-- persistencia simulada via MirageJS com banco em memoria
+- listagem de escolas com nome, endereco e quantidade de turmas
+- cadastro de escola com validacao de nome e endereco obrigatorios
+- edicao e exclusao de escolas
+- feedback visual para carregamento, erro, lista vazia e confirmacao de exclusao
+- busca textual e filtro por status de turmas
 
-## Arquitetura aplicada
+### Modulo de Turmas
 
-- `app/` concentra apenas rotas e composicao das telas
-- `src/features/schools` concentra tipos, componentes, hooks, servicos e store do dominio
-- `src/server/mirage` concentra DTOs, modelos, rotas e seeds do back-end simulado
-- `src/components` concentra componentes reutilizaveis de layout, formularios, feedback e acoes
-- `src/lib/api` centraliza o cliente HTTP e tratamento de erro
+- listagem de turmas vinculadas a uma escola
+- cadastro de turma com nome, turno e ano letivo
+- edicao e exclusao de turmas
+- busca textual e filtro por turno
 
-Essa organizacao foi mantida para favorecer evolucao incremental com aderencia a Clean Code, S.O.L.I.D. e separacao clara de responsabilidades.
+### Diferenciais implementados
 
-## O que ainda nao foi implementado
+- componentizacao da UI para formularios, filtros, botoes, dialogos e cards
+- hooks customizados para formularios e carregamento de recurso
+- armazenamento offline opcional do banco mockado com AsyncStorage
+- testes unitarios de modelos, store, componentes e rotas do Mirage
 
-- autenticacao e perfis de acesso
-- sincronizacao com back-end real
-- modulo dedicado de turmas com fluxo proprio de CRUD
-- dashboard e indicadores consolidados
-- testes de interface para os componentes visuais
+## Arquitetura
+
+- `app/`: rotas e composicao das telas com Expo Router
+- `src/features/`: organizacao por dominio (`schools` e `classrooms`)
+- `src/components/`: componentes reutilizaveis de layout, formularios, filtros e feedback
+- `src/lib/`: infraestrutura compartilhada, cliente HTTP, storage e utilitarios
+- `src/server/mirage/`: DTOs, modelos, rotas e seeds do back-end simulado
+
+Alguns padroes aplicados:
+
+- `Repository`: persistencia JSON tipada para AsyncStorage em `src/lib/storage/json-storage.repository.ts`
+- `Adapter`: encapsulamento do AsyncStorage em `src/lib/storage/async-storage.client.ts`
+- separacao entre regras puras de formulario/filtro, camada de servico HTTP e store global
 
 ## Instalacao
 
@@ -76,20 +61,75 @@ Essa organizacao foi mantida para favorecer evolucao incremental com aderencia a
 npm install
 ```
 
-## Execucao
+Node recomendado:
 
 ```bash
-nvm use
-npm run start
+nvm use 20.19.4
 ```
 
-Atalhos por plataforma:
+O `package.json` exige `node >= 20.19.4`, e a CI usa a mesma versao.
+
+## Execucao
+
+Suba o app em modo desenvolvimento:
 
 ```bash
+npx expo start
+```
+
+Ou use os atalhos:
+
+```bash
+npm run start
 npm run android
 npm run ios
 npm run web
 ```
+
+## Mock de back-end
+
+Nenhum processo separado precisa ser iniciado.
+
+- o MirageJS sobe automaticamente no bootstrap da aplicacao em ambiente de desenvolvimento
+- a base da API mockada eh `https://mock.api.local`
+- os dados do mock sao persistidos localmente com AsyncStorage quando disponivel
+- se o storage falhar, o app continua funcionando com banco em memoria
+
+### Endpoints simulados
+
+#### Escolas
+
+- `GET /schools`
+- `POST /schools`
+- `PUT /schools/:schoolId`
+- `DELETE /schools/:schoolId`
+
+#### Turmas por escola
+
+- `GET /schools/:schoolId/classrooms`
+- `POST /schools/:schoolId/classrooms`
+- `PUT /schools/:schoolId/classrooms/:classroomId`
+- `DELETE /schools/:schoolId/classrooms/:classroomId`
+
+#### Recurso literal de turmas
+
+- `GET /classes`
+- `GET /classes?schoolId=:schoolId`
+- `GET /classes/:classroomId`
+- `POST /classes`
+- `PUT /classes/:classroomId`
+- `DELETE /classes/:classroomId`
+
+O aplicativo consome as rotas aninhadas por escola, e o endpoint literal `/classes` foi mantido no mock para atender integracoes e validacoes que esperam esse recurso explicitamente.
+
+## Rotas da aplicacao
+
+- `/schools`
+- `/schools/new`
+- `/schools/[schoolId]/edit`
+- `/schools/[schoolId]/classrooms`
+- `/schools/[schoolId]/classrooms/new`
+- `/schools/[schoolId]/classrooms/[classroomId]/edit`
 
 ## Qualidade de codigo
 
@@ -103,70 +143,24 @@ npm run build:web
 
 ## Testes
 
-O repositorio inclui testes unitarios para:
+Execucao local:
 
 ```bash
 npm run test
 ```
 
-- bootstrap do app com Zustand
-- mapeamento e validacao do formulario de escolas
-- store de escolas
-- modelo de dominio do MirageJS
+Cobertura atual:
 
-## Mock de back-end
-
-Nenhum processo separado precisa ser iniciado.
-
-- em ambiente de desenvolvimento, o MirageJS sobe automaticamente no bootstrap do app
-- a base da API mockada usa `https://mock.api.local`
-- as rotas disponiveis atualmente ficam sob `/api/v1/schools`
-- os dados sao mantidos em memoria e reiniciados ao recriar o processo
-
-## Estrutura principal
-
-```text
-app/
-  _layout.tsx
-  index.tsx
-  schools/
-  classrooms/
-
-src/
-  components/
-    actions/
-    feedback/
-    forms/
-    icons/
-    layout/
-    ui/
-  features/
-    schools/
-    classrooms/
-  lib/
-    api/
-    platform/
-    router/
-    utils/
-  providers/
-  server/
-    mirage/
-      dto/
-      models/
-      routes/
-      seeds/
-      utils/
-  store/
-  test-utils/
-  theme/
-  types/
-```
+- bootstrap global da aplicacao
+- modelos puros de formulario e filtro
+- store de escolas com Zustand
+- componentes reutilizaveis com Testing Library React Native
+- persistencia e modelos do Mirage
+- rotas do Mirage, incluindo o endpoint literal `/classes`
 
 ## CI
 
-O projeto possui uma workflow em `.github/workflows/ci.yaml`.
-
-Validacoes executadas na pipeline:
+Workflow em `.github/workflows/ci.yaml` com:
 
 - `npm ci`
 - `npm run lint`
@@ -175,8 +169,41 @@ Validacoes executadas na pipeline:
 - `npm run test:ci`
 - `npm run build:web`
 
-## Fluxos atuais
+## Estrutura principal
 
-- `/schools`: lista de escolas
-- `/schools/new`: cadastro de escola
-- `/schools/[schoolId]/edit`: edicao de escola
+```text
+app/
+  _layout.tsx
+  index.tsx
+  schools/
+    index.tsx
+    new.tsx
+    [schoolId]/
+      edit.tsx
+      classrooms/
+        index.tsx
+        new.tsx
+        [classroomId]/
+          edit.tsx
+
+src/
+  components/
+  features/
+    classrooms/
+    schools/
+  lib/
+    api/
+    platform/
+    storage/
+  providers/
+  server/
+    mirage/
+  store/
+  test-utils/
+  theme/
+```
+
+## Observacoes
+
+- o mock eh iniciado automaticamente apenas em desenvolvimento
+- o build web gerado na CI valida compilacao e bundling; para testar o app com o mock ativo, use `expo start` em modo desenvolvimento

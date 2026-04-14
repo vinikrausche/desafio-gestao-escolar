@@ -1,4 +1,5 @@
 import type {
+  CreateClassPayload,
   CreateClassroomPayload,
   UpdateClassroomPayload,
 } from '../dto/classroom.dto';
@@ -13,6 +14,11 @@ import {
   writeMockDb,
 } from '../seeds/in-memory-db';
 import { generateModelId } from './model-id';
+
+export type ClassResource = ClassroomRecord & {
+  schoolId: string;
+  schoolName: string;
+};
 
 function buildClassroomRecord(classroom: {
   id?: string;
@@ -58,6 +64,35 @@ function findClassroomById(
   classroomId: string,
 ): ClassroomRecord | undefined {
   return classrooms.find((classroom) => classroom.id === classroomId);
+}
+
+function buildClassResource(
+  school: SchoolEntity,
+  classroom: ClassroomRecord,
+): ClassResource {
+  return {
+    ...classroom,
+    schoolId: school.id,
+    schoolName: school.name,
+  };
+}
+
+function findSchoolWithClassroomById(
+  schools: SchoolEntity[],
+  classroomId: string,
+): { classroom: ClassroomRecord; school: SchoolEntity } | undefined {
+  for (const school of schools) {
+    const classroom = findClassroomById(school.classrooms, classroomId);
+
+    if (classroom) {
+      return {
+        classroom,
+        school,
+      };
+    }
+  }
+
+  return undefined;
 }
 
 export const schoolModel = {
@@ -190,6 +225,55 @@ export const schoolModel = {
     return school?.classrooms;
   },
 
+  getClass(classroomId: string): ClassResource | undefined {
+    const snapshot = readMockDb();
+    const match = findSchoolWithClassroomById(snapshot.schools, classroomId);
+
+    if (!match) {
+      return undefined;
+    }
+
+    return buildClassResource(match.school, match.classroom);
+  },
+
+  listClasses(schoolId?: string): ClassResource[] | undefined {
+    const snapshot = readMockDb();
+
+    if (schoolId) {
+      const school = findSchoolById(snapshot.schools, schoolId);
+
+      if (!school) {
+        return undefined;
+      }
+
+      return school.classrooms.map((classroom) =>
+        buildClassResource(school, classroom),
+      );
+    }
+
+    return snapshot.schools.flatMap((school) =>
+      school.classrooms.map((classroom) =>
+        buildClassResource(school, classroom),
+      ),
+    );
+  },
+
+  createClass(payload: CreateClassPayload): ClassResource | undefined {
+    const updatedSchool = this.createClassroom(payload.schoolId, payload);
+
+    if (!updatedSchool) {
+      return undefined;
+    }
+
+    const createdClassroom = updatedSchool.classrooms.at(-1);
+
+    if (!createdClassroom) {
+      return undefined;
+    }
+
+    return buildClassResource(updatedSchool, createdClassroom);
+  },
+
   updateClassroom(
     schoolId: string,
     classroomId: string,
@@ -229,5 +313,32 @@ export const schoolModel = {
     });
 
     return nextSchool;
+  },
+
+  updateClass(
+    classroomId: string,
+    payload: UpdateClassroomPayload,
+  ): ClassResource | undefined {
+    const snapshot = readMockDb();
+    const match = findSchoolWithClassroomById(snapshot.schools, classroomId);
+
+    if (!match) {
+      return undefined;
+    }
+
+    this.updateClassroom(match.school.id, classroomId, payload);
+
+    return this.getClass(classroomId);
+  },
+
+  deleteClass(classroomId: string): boolean {
+    const snapshot = readMockDb();
+    const match = findSchoolWithClassroomById(snapshot.schools, classroomId);
+
+    if (!match) {
+      return false;
+    }
+
+    return Boolean(this.deleteClassroom(match.school.id, classroomId));
   },
 };

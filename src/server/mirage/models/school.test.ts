@@ -182,4 +182,75 @@ describe('schoolModel', () => {
       ),
     ).toBeUndefined();
   });
+
+  it('lista turmas no formato plano para o endpoint /classes', () => {
+    expect(schoolModel.listClasses()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'classroom-seed-1',
+          name: '6º Ano A',
+          schoolId: 'school-seed-1',
+          schoolName: 'Escola Municipal Centro',
+        }),
+        expect.objectContaining({
+          id: 'classroom-seed-3',
+          name: '7º Ano A',
+          schoolId: 'school-seed-2',
+          schoolName: 'Escola Municipal Vila Nova',
+        }),
+      ]),
+    );
+
+    expect(schoolModel.listClasses('school-seed-1')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          schoolId: 'school-seed-1',
+        }),
+      ]),
+    );
+  });
+
+  it('cria, consulta, atualiza e remove uma turma pelo recurso /classes', () => {
+    const createdClass = schoolModel.createClass({
+      name: '9º Ano C',
+      schoolId: 'school-seed-2',
+      schoolYear: '2027',
+      shift: 'night',
+    });
+
+    expect(createdClass).toEqual(
+      expect.objectContaining({
+        name: '9º Ano C',
+        schoolId: 'school-seed-2',
+        schoolName: 'Escola Municipal Vila Nova',
+        schoolYear: '2027',
+        shift: 'night',
+      }),
+    );
+
+    expect(schoolModel.getClass(createdClass?.id ?? '')).toEqual(
+      expect.objectContaining({
+        id: createdClass?.id,
+        schoolId: 'school-seed-2',
+      }),
+    );
+
+    expect(
+      schoolModel.updateClass(createdClass?.id ?? '', {
+        name: '9º Ano C - Atualizada',
+        schoolYear: '2028',
+        shift: 'afternoon',
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        id: createdClass?.id,
+        name: '9º Ano C - Atualizada',
+        schoolYear: '2028',
+        shift: 'afternoon',
+      }),
+    );
+
+    expect(schoolModel.deleteClass(createdClass?.id ?? '')).toBe(true);
+    expect(schoolModel.getClass(createdClass?.id ?? '')).toBeUndefined();
+  });
 });
