@@ -32,7 +32,7 @@ export default function NewSchoolScreen() {
       const message =
         error instanceof Error
           ? error.message
-          : 'Nao foi possivel adicionar as fotos.';
+          : 'Nao foi possivel adicionar as fotos 02.';
 
       Alert.alert('Erro ao adicionar fotos', message);
       setFormError(message);
