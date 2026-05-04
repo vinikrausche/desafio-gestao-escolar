@@ -41,12 +41,22 @@ export class SchoolModel {
     const nextSchool: SchoolEntity = {
       ...currentSchool,
       address: payload.address,
+      addressNumber: payload.addressNumber,
+      city: payload.city,
       classrooms: payload.classrooms
         ? payload.classrooms.map((classroom) =>
             this.factory.createClassroomRecord(classroom),
           )
         : currentSchool.classrooms,
+      district: payload.district,
       name: payload.name,
+      photos: payload.photos
+        ? payload.photos.map((photo) =>
+            this.factory.createSchoolPhotoRecord(photo),
+          )
+        : currentSchool.photos,
+      postalCode: payload.postalCode,
+      state: payload.state.toUpperCase(),
     };
 
     await this.repository.updateSchool(nextSchool);

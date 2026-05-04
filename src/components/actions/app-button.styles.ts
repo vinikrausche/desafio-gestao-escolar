@@ -32,6 +32,12 @@ export const appButtonStyles = StyleSheet.create({
   dangerSoftText: {
     color: appTheme.colors.error,
   },
+  disabledButton: {
+    opacity: 0.55,
+  },
+  disabledText: {
+    color: appTheme.colors.textMuted,
+  },
   mdButton: {
     borderRadius: 18,
     minHeight: 52,

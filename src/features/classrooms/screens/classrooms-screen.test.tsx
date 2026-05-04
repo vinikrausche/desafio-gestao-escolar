@@ -106,7 +106,11 @@ describe('ClassroomsScreen', () => {
     renderWithUi(<ClassroomsScreen />);
 
     expect(screen.getByText('Escola Municipal Centro')).toBeTruthy();
-    expect(screen.getByText('Rua das Flores, 120')).toBeTruthy();
+    expect(screen.getAllByText('Rua das Flores, 120').length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getByText('Galeria da escola')).toBeTruthy();
+    expect(screen.getByText('Localizacao')).toBeTruthy();
     expect(screen.getByText('6º Ano A')).toBeTruthy();
     expect(screen.getByText('7º Ano B')).toBeTruthy();
 

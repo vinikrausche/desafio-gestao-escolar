@@ -19,8 +19,10 @@ export function FormTextInput({
   helperMessage,
   keyboardType,
   label,
+  maxLength,
   multiline = false,
   numberOfLines = 4,
+  onBlur,
   onChangeText,
   placeholder,
   value,
@@ -52,9 +54,13 @@ export function FormTextInput({
           <TextareaInput
             autoCapitalize={autoCapitalize}
             keyboardType={keyboardType}
+            maxLength={maxLength}
             multiline
             numberOfLines={numberOfLines}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => {
+              setIsFocused(false);
+              onBlur?.();
+            }}
             onChangeText={onChangeText}
             onFocus={() => setIsFocused(true)}
             placeholder={placeholder}
@@ -75,7 +81,11 @@ export function FormTextInput({
           <InputField
             autoCapitalize={autoCapitalize}
             keyboardType={keyboardType}
-            onBlur={() => setIsFocused(false)}
+            maxLength={maxLength}
+            onBlur={() => {
+              setIsFocused(false);
+              onBlur?.();
+            }}
             onChangeText={onChangeText}
             onFocus={() => setIsFocused(true)}
             placeholder={placeholder}

@@ -69,6 +69,10 @@ function matchesSchoolSearch(
   const searchableContent = [
     school.name,
     school.address,
+    school.city,
+    school.district,
+    school.postalCode,
+    school.state,
     school.classrooms.map((classroom) => classroom.name).join(' '),
   ].join(' ');
 

@@ -4,6 +4,7 @@ import {
   type ClassroomRecord,
   type MockDatabaseState,
   type SchoolEntity,
+  type SchoolPhotoRecord,
 } from './mock-db.types';
 
 let mockDb = clone(initialMockDb);
@@ -69,4 +70,9 @@ export async function clearPersistedMockDb() {
   }
 }
 
-export type { ClassroomRecord, MockDatabaseState, SchoolEntity };
+export type {
+  ClassroomRecord,
+  MockDatabaseState,
+  SchoolEntity,
+  SchoolPhotoRecord,
+};

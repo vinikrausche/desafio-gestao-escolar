@@ -13,9 +13,23 @@ const classroomRecordSchema = z.object({
 
 const schoolEntitySchema = z.object({
   address: z.string(),
+  addressNumber: z.string().optional().default(''),
+  city: z.string().optional().default(''),
   classrooms: z.array(classroomRecordSchema),
+  district: z.string().optional().default(''),
   id: z.string(),
   name: z.string(),
+  photos: z
+    .array(
+      z.object({
+        id: z.string(),
+        uri: z.string(),
+      }),
+    )
+    .optional()
+    .default([]),
+  postalCode: z.string().optional().default(''),
+  state: z.string().optional().default(''),
 });
 
 const mockDatabaseStateSchema = z.object({

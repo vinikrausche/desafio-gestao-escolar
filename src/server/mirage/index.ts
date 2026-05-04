@@ -18,6 +18,8 @@ function makeServer() {
       this.urlPrefix = API_BASE_URL;
 
       handlers(this);
+
+      this.passthrough('https://viacep.com.br/**');
     },
   });
 }

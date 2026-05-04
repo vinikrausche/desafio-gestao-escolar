@@ -1,4 +1,4 @@
-import { Button, ButtonText } from '@gluestack-ui/themed';
+import { Pressable, Text } from 'react-native';
 
 import { appButtonStyles as styles } from './app-button.styles';
 import type { AppButtonProps } from './types/app-button.types';
@@ -65,28 +65,31 @@ export function AppButton({
   const selectedVariant = variantStyles[variant];
 
   return (
-    <Button
+    <Pressable
       accessibilityLabel={accessibilityLabel}
-      isDisabled={isDisabled}
-      onPress={() => void onPress()}
+      accessibilityRole="button"
+      disabled={isDisabled}
+      onPress={isDisabled ? undefined : () => void onPress()}
       style={[
         styles.baseButton,
         alignmentStyles[align],
         selectedSize.button,
         selectedVariant.button,
+        isDisabled ? styles.disabledButton : null,
         style,
       ]}
     >
-      <ButtonText
+      <Text
         style={[
           styles.baseText,
           selectedSize.text,
           selectedVariant.text,
+          isDisabled ? styles.disabledText : null,
           textStyle,
         ]}
       >
         {label}
-      </ButtonText>
-    </Button>
+      </Text>
+    </Pressable>
   );
 }

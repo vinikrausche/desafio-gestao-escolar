@@ -19,9 +19,15 @@ describe('in-memory-db', () => {
       schools: [
         {
           address: 'Rua Persistida, 50',
+          addressNumber: '50',
+          city: 'Manaus',
           classrooms: [],
+          district: 'Centro',
           id: 'school-persisted-1',
           name: 'Escola Persistida',
+          photos: [],
+          postalCode: '69005-000',
+          state: 'AM',
         },
       ],
     };
@@ -51,9 +57,15 @@ describe('in-memory-db', () => {
         ...initialMockDb.schools,
         {
           address: 'Avenida Nova, 120',
+          addressNumber: '120',
+          city: 'Manaus',
           classrooms: [],
+          district: 'Centro',
           id: 'school-offline-1',
           name: 'Escola Offline',
+          photos: [],
+          postalCode: '69005-000',
+          state: 'AM',
         },
       ],
     };

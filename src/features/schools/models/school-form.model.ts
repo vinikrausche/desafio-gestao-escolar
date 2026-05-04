@@ -6,6 +6,8 @@ import type {
   SchoolFormErrors,
   SchoolFormValues,
 } from '../../../types/features/schools/school-form.types';
+import { formatPostalCode, isPostalCodeFormatValid } from './cep.model';
+import { isPersistableSchoolPhotoUri } from './school-photo.model';
 
 export type {
   SchoolFormErrors,
@@ -28,7 +30,13 @@ export function createInitialSchoolFormValues(
 ): SchoolFormValues {
   return {
     address: values.address ?? '',
+    addressNumber: values.addressNumber ?? '',
+    city: values.city ?? '',
+    district: values.district ?? '',
     name: values.name ?? '',
+    photoUris: (values.photoUris ?? []).filter(isPersistableSchoolPhotoUri),
+    postalCode: formatPostalCode(values.postalCode ?? ''),
+    state: values.state ?? '',
   };
 }
 
@@ -43,11 +51,43 @@ export function validateSchoolForm(values: SchoolFormValues): SchoolFormErrors {
     nextErrors.address = 'Informe o endereco da escola.';
   }
 
+  if (!isPostalCodeFormatValid(values.postalCode)) {
+    nextErrors.postalCode = 'Informe um CEP valido com 8 digitos.';
+  }
+
+  if (!values.district.trim()) {
+    nextErrors.district = 'Informe o bairro da escola.';
+  }
+
+  if (!values.city.trim()) {
+    nextErrors.city = 'Informe a cidade da escola.';
+  }
+
+  if (!values.state.trim()) {
+    nextErrors.state = 'Informe a UF da escola.';
+  }
+
   return nextErrors;
 }
 
 function hasValidationErrors(errors: SchoolFormErrors) {
-  return Boolean(errors.name || errors.address);
+  return Boolean(
+    errors.name ||
+    errors.address ||
+    errors.city ||
+    errors.district ||
+    errors.postalCode ||
+    errors.state,
+  );
+}
+
+function buildSchoolPhotos(values: SchoolFormValues) {
+  return values.photoUris
+    .map((uri) => uri.trim())
+    .filter(isPersistableSchoolPhotoUri)
+    .map((uri) => ({
+      uri,
+    }));
 }
 
 export function buildSchoolInput(
@@ -65,7 +105,13 @@ export function buildSchoolInput(
   return {
     data: {
       address: values.address.trim(),
+      addressNumber: values.addressNumber.trim(),
+      city: values.city.trim(),
+      district: values.district.trim(),
       name: values.name.trim(),
+      photos: buildSchoolPhotos(values),
+      postalCode: formatPostalCode(values.postalCode),
+      state: values.state.trim().toUpperCase(),
     },
     success: true,
   };
@@ -92,7 +138,13 @@ export function buildUpdateSchoolInput(values: SchoolFormValues):
   return {
     data: {
       address: values.address.trim(),
+      addressNumber: values.addressNumber.trim(),
+      city: values.city.trim(),
+      district: values.district.trim(),
       name: values.name.trim(),
+      photos: buildSchoolPhotos(values),
+      postalCode: formatPostalCode(values.postalCode),
+      state: values.state.trim().toUpperCase(),
     },
     success: true,
   };

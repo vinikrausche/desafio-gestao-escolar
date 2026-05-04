@@ -10,6 +10,7 @@ import { SchoolForm } from '../../../src/features/schools/components/school-form
 import { useSchoolForm } from '../../../src/features/schools/hooks/use-school-form';
 import { newSchoolScreenStyles as styles } from '../../../src/features/schools/new-school-screen.styles';
 import { useSchoolResource } from '../../../src/features/schools/hooks/use-school-resource';
+import { pickSchoolPhotoUris } from '../../../src/features/schools/services/school-photo-picker.service';
 import { useSchoolsStore } from '../../../src/features/schools/store/schools.store';
 import { resolveRouteParam } from '../../../src/lib/router/resolve-route-param';
 
@@ -27,10 +28,14 @@ export default function EditSchoolScreen() {
   } = useSchoolResource(resolvedSchoolId);
   const updateSchool = useSchoolsStore((state) => state.updateSchool);
   const {
+    addPhotoUris,
     errors,
     formValues,
     getUpdatePayload,
+    isPostalCodeLookupLoading,
+    lookupAddressByPostalCode,
     replaceFormValues,
+    removePhotoUri,
     setFormError,
     updateField,
   } = useSchoolForm();
@@ -43,12 +48,39 @@ export default function EditSchoolScreen() {
 
     replaceFormValues({
       address: school.address,
+      addressNumber: school.addressNumber ?? '',
+      city: school.city ?? '',
+      district: school.district ?? '',
       name: school.name,
+      photoUris: (school.photos ?? []).map((photo) => photo.uri),
+      postalCode: school.postalCode ?? '',
+      state: school.state ?? '',
     });
   }, [replaceFormValues, school]);
 
+  async function handleAddPhotos() {
+    try {
+      const photoUris = await pickSchoolPhotoUris();
+      addPhotoUris(photoUris);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Nao foi possivel adicionar as fotos.';
+
+      Alert.alert('Erro ao adicionar fotos', message);
+      setFormError(message);
+    }
+  }
+
   async function handleSubmit() {
-    const payload = getUpdatePayload();
+    const addressValues = await lookupAddressByPostalCode();
+
+    if (!addressValues) {
+      return;
+    }
+
+    const payload = getUpdatePayload(addressValues);
 
     if (!payload) {
       return;
@@ -123,9 +155,13 @@ export default function EditSchoolScreen() {
             <SchoolForm
               errors={errors}
               formValues={formValues}
+              isPostalCodeLookupLoading={isPostalCodeLookupLoading}
               isSubmitting={isSubmitting}
+              onAddPhotos={() => void handleAddPhotos()}
               onCancel={() => router.back()}
               onFieldChange={updateField}
+              onPostalCodeLookup={() => void lookupAddressByPostalCode()}
+              onRemovePhoto={removePhotoUri}
               onSubmit={handleSubmit}
               submitLabel="Salvar alteracoes"
             />

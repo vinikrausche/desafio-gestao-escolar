@@ -74,8 +74,12 @@ describe('useSchoolsStore', () => {
 
     await useSchoolsStore.getState().createSchool({
       address: 'Rua Nova, 45',
+      city: 'Manaus',
       classrooms: [],
+      district: 'Centro',
       name: 'Escola Nova',
+      postalCode: '69005-000',
+      state: 'AM',
     });
 
     expect(useSchoolsStore.getState().schoolsById['school-10']).toEqual(
@@ -189,6 +193,7 @@ describe('useSchoolsStore', () => {
 
     await useSchoolsStore.getState().updateSchool('school-1', {
       address: 'Avenida Nova, 200',
+      city: 'Manaus',
       classrooms: [
         {
           id: 'classroom-1',
@@ -197,7 +202,10 @@ describe('useSchoolsStore', () => {
           shift: 'afternoon',
         },
       ],
+      district: 'Centro',
       name: 'Escola Atualizada',
+      postalCode: '69005-000',
+      state: 'AM',
     });
 
     expect(useSchoolsStore.getState().schoolsById['school-1']).toEqual(

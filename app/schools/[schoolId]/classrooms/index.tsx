@@ -16,7 +16,10 @@ import {
   defaultClassroomShiftFilter,
   filterClassrooms,
 } from '../../../../src/features/classrooms/models/classroom-list-filter.model';
+import { SchoolMapFooter } from '../../../../src/features/schools/components/school-map-footer';
+import { SchoolPhotoGallery } from '../../../../src/features/schools/components/school-photo-gallery';
 import { useSchoolResource } from '../../../../src/features/schools/hooks/use-school-resource';
+import { formatSchoolAddress } from '../../../../src/features/schools/models/school-address.model';
 import { useSchoolsStore } from '../../../../src/features/schools/store/schools.store';
 import { resolveRouteParam } from '../../../../src/lib/router/resolve-route-param';
 import type { DialogState } from './types/classrooms-screen.types';
@@ -134,8 +137,17 @@ export default function ClassroomsScreen() {
           {school ? (
             <VStack style={styles.schoolSummary}>
               <Text style={styles.schoolName}>{school.name}</Text>
-              <Text style={styles.schoolAddress}>{school.address}</Text>
+              <Text style={styles.schoolAddress}>
+                {formatSchoolAddress(school)}
+              </Text>
             </VStack>
+          ) : null}
+
+          {school ? (
+            <SchoolPhotoGallery
+              photos={school.photos ?? []}
+              schoolName={school.name}
+            />
           ) : null}
 
           {isLoadingSchool ? (
@@ -250,6 +262,8 @@ export default function ClassroomsScreen() {
               ))}
             </VStack>
           ) : null}
+
+          {school ? <SchoolMapFooter school={school} /> : null}
         </VStack>
       </ScreenShell>
 

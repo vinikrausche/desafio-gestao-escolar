@@ -4,6 +4,30 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(),
+  requestMediaLibraryPermissionsAsync: jest.fn(() =>
+    Promise.resolve({ granted: true }),
+  ),
+}));
+
+jest.mock('expo-file-system/legacy', () => ({
+  copyAsync: jest.fn(() => Promise.resolve()),
+  documentDirectory: 'file:///mock-document-directory/',
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true })),
+  makeDirectoryAsync: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('react-native-webview', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+
+  return {
+    WebView: ({ children, ...props }: { children?: ReactNode }) =>
+      React.createElement(View, props, children),
+  };
+});
+
 jest.mock('@gluestack-ui/overlay', () => {
   const React = require('react');
 
@@ -121,6 +145,9 @@ jest.mock('@gluestack-ui/themed', () => {
     Button,
     ButtonText: createTextComponent('MockButtonText'),
     Card: createViewComponent('MockCard'),
+    ChevronLeftIcon: 'ChevronLeftIcon',
+    ChevronRightIcon: 'ChevronRightIcon',
+    CloseIcon: 'CloseIcon',
     EditIcon: 'EditIcon',
     GluestackUIProvider: ({
       children,

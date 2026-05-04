@@ -1,6 +1,10 @@
 import type { CreateSchoolPayload } from '../dto/school.dto';
 import type { ClassResource } from '../../../types/server/mirage/class-resource.types';
-import type { ClassroomRecord, SchoolEntity } from '../seeds/in-memory-db';
+import type {
+  ClassroomRecord,
+  SchoolEntity,
+  SchoolPhotoRecord,
+} from '../seeds/in-memory-db';
 import { generateModelId } from './model-id';
 
 type ClassroomDraft = {
@@ -10,15 +14,28 @@ type ClassroomDraft = {
   shift: ClassroomRecord['shift'];
 };
 
+type SchoolPhotoDraft = {
+  id?: string;
+  uri: string;
+};
+
 export class SchoolAggregateFactory {
   public createSchool(payload: CreateSchoolPayload): SchoolEntity {
     return {
       address: payload.address,
+      addressNumber: payload.addressNumber,
+      city: payload.city,
       classrooms: payload.classrooms.map((classroom) =>
         this.createClassroomRecord(classroom),
       ),
+      district: payload.district,
       id: generateModelId('school'),
       name: payload.name,
+      photos: payload.photos.map((photo) =>
+        this.createSchoolPhotoRecord(photo),
+      ),
+      postalCode: payload.postalCode,
+      state: payload.state.toUpperCase(),
     };
   }
 
@@ -28,6 +45,13 @@ export class SchoolAggregateFactory {
       name: payload.name,
       schoolYear: payload.schoolYear,
       shift: payload.shift,
+    };
+  }
+
+  public createSchoolPhotoRecord(payload: SchoolPhotoDraft): SchoolPhotoRecord {
+    return {
+      id: payload.id ?? generateModelId('school-photo'),
+      uri: payload.uri,
     };
   }
 

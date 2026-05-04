@@ -6,8 +6,10 @@ export type FormTextInputProps = {
   helperMessage?: string;
   keyboardType?: KeyboardTypeOptions;
   label: string;
+  maxLength?: number;
   multiline?: boolean;
   numberOfLines?: number;
+  onBlur?: () => void;
   onChangeText: (value: string) => void;
   placeholder: string;
   value: string;
