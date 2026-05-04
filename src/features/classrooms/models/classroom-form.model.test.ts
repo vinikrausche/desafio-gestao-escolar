@@ -43,7 +43,7 @@ describe('classroom-form.model', () => {
     expect(
       buildClassroomInput({
         name: ' 6º Ano A ',
-        schoolYear: ' 2026 ',
+        schoolYear:2,
         shift: 'night',
       }),
     ).toEqual({
